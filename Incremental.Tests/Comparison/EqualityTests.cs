@@ -37,4 +37,17 @@ public class EqualityTests
         Assert.True(org.Equals(copy));
         Assert.True(org.Equals((object)copy));
     }
+
+    public static IEnumerable<Incremental[]> CommonEqualityTestData = new List<Incremental[]>
+    {
+        new Incremental[] { new(0, 0), new(0, 100) },
+        new Incremental[] { new(Incremental.Unit, 0), new(1, Incremental.Precision) },
+        new Incremental[] { new(Incremental.UnitSqrt, 0), new(1, Incremental.Precision / 2) },
+    };
+
+    [TestCaseSource(nameof(CommonEqualityTestData))]
+    public void TestCommonEquality(Incremental a, Incremental b)
+    {
+        Assert.AreEqual(a, b);
+    }
 }

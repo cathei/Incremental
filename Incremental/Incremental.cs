@@ -10,11 +10,17 @@ namespace Cathei.Mathematics
     /// </summary>
     public readonly struct Incremental : IEquatable<Incremental>, IComparable<Incremental>
     {
+        /// <summary>
+        /// Decimal part of the value.
+        /// Mantissa is always normalized in range of [Unit, Unit * 10), unless zero.
+        /// </summary>
         public readonly long Mantissa;
-        public readonly long Exponent;
 
-        public static readonly Incremental Zero = new Incremental(0, 0);
-        public static readonly Incremental One = new Incremental(Unit, 0);
+        /// <summary>
+        /// Exponential part of the value.
+        /// If Mantissa is 0, Exponent is always 0.
+        /// </summary>
+        public readonly long Exponent;
 
         /// <summary>
         /// Maximum precision under decimal point with long type mantissa.
@@ -31,24 +37,22 @@ namespace Cathei.Mathematics
         /// </summary>
         public const long UnitSqrt = 1_0000_0000;
 
-        public const int MaxPowersOf10Range = 20;
+        /// <summary>
+        /// Value of number 0.
+        /// </summary>
+        public static readonly Incremental Zero = new Incremental(0, 0);
 
         /// <summary>
-        /// Lookup table for power of 10s.
+        /// Value of number 1.
         /// </summary>
-        public static readonly long[] PowersOf10 = new long[MaxPowersOf10Range];
+        public static readonly Incremental One = new Incremental(Unit, 0);
 
-        static Incremental()
-        {
-            long value = 1;
-
-            for (int i = 0; i < MaxPowersOf10Range; ++i)
-            {
-                PowersOf10[i] = value;
-                value *= 10;
-            }
-        }
-
+        /// <summary>
+        /// Construct Incremental value manually. The value will be normalized.
+        /// (Unit, 0) will be same as (1, Precision).
+        /// </summary>
+        /// <param name="mantissa">Decimal part of the value.</param>
+        /// <param name="exponent">Exponential part of the value.</param>
         public Incremental(long mantissa, long exponent)
         {
             // zero
@@ -64,13 +68,13 @@ namespace Cathei.Mathematics
             // normalize
             if (abs < Unit)
             {
-                var adjustment = Precision - Log10(abs);
+                var adjustment = Precision - Log10Int(abs);
                 mantissa *= PowersOf10[adjustment];
                 exponent -= adjustment;
             }
             else if (abs >= Unit * 10)
             {
-                var adjustment = Log10(abs) - Precision;
+                var adjustment = Log10Int(abs) - Precision;
                 mantissa /= PowersOf10[adjustment];
                 exponent += adjustment;
             }
@@ -203,6 +207,26 @@ namespace Cathei.Mathematics
         /// </summary>
         public static Incremental Max(in Incremental a, in Incremental b) => a > b ? a : b;
 
+
+        /// <summary>
+        /// Returns absolute value.
+        /// </summary>
+        public static Incremental Abs(in Incremental value)
+            => new Incremental(Math.Abs(value.Mantissa), value.Exponent);
+
+        // /// <summary>
+        // /// Returns Log10 value. (undefined when value is not positive)
+        // /// </summary>
+        // public static Incremental Log10(in Incremental value)
+        // {
+        //
+        // }
+
+        /// <summary>
+        /// Returns power of 10.
+        /// </summary>
+        public static Incremental Pow10(long power) => new Incremental(Unit, power);
+
         #endregion
 
         #region Override methods
@@ -234,7 +258,30 @@ namespace Cathei.Mathematics
 
         #endregion
 
-        private static int Log10(long value)
+        #region Private utilities
+
+        private const int MaxPowersOf10Range = 20;
+
+        /// <summary>
+        /// Lookup table for power of 10s.
+        /// </summary>
+        private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range];
+
+        static Incremental()
+        {
+            long value = 1;
+
+            for (int i = 0; i < MaxPowersOf10Range; ++i)
+            {
+                PowersOf10[i] = value;
+                value *= 10;
+            }
+        }
+
+        /// <summary>
+        /// Internal common log for normalization.
+        /// </summary>
+        private static int Log10Int(long value)
         {
             int result = 0;
             int eval = 16;
@@ -252,5 +299,7 @@ namespace Cathei.Mathematics
 
             return result;
         }
+
+        #endregion
     }
 }
