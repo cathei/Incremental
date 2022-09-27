@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Incremental", "Incremental\Incremental.csproj", "{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
