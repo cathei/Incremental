@@ -37,6 +37,18 @@ public class DivisionTests
         },
         new Incremental[]
         {
+            new(-81 * Unit, 198),
+            new(9 * Unit, 99),
+            new(-9 * Unit, 99)
+        },
+        new Incremental[]
+        {
+            new(-81 * Unit, 198),
+            new(-9 * Unit, 99),
+            new(9 * Unit, 99)
+        },
+        new Incremental[]
+        {
             new(10_000_000_000_000_001, 0),
             1,
             new(10_000_000_000_000_001, 0)
