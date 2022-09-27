@@ -4,12 +4,12 @@ Incremental Deterministic Decimal Number type in C#
 ## Features
 * 128-bit number type
   * 1-bit sign
-  * 62-bit mantissa
+  * 58-bit mantissa
   * 64-bit exponent
 * Decimal representation (No binary rounding error)
 * Deterministic math calculation
 * Reasonable precision (17 decimal digits)
-* HUGE representation range from 1E-(2^63) to 9.99E+(2^63)
+* HUGE representation range from 1E-(2^63) to 9.99E+(2^63-1)
   * Means you can have 9,223,372,036,854,775,807 zeros
 
 ## Comparison

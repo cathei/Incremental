@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Incremental", "Incremental\Incremental.csproj", "{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Incremental.Tests", "Incremental.Tests\Incremental.Tests.csproj", "{47D46E10-C4B8-4EB1-BE7E-687E0B2A0EE7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAF81B88-2BBA-4F49-B86D-4A39383D6FDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D46E10-C4B8-4EB1-BE7E-687E0B2A0EE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D46E10-C4B8-4EB1-BE7E-687E0B2A0EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D46E10-C4B8-4EB1-BE7E-687E0B2A0EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D46E10-C4B8-4EB1-BE7E-687E0B2A0EE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
