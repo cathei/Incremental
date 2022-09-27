@@ -6,7 +6,7 @@ using System.Globalization;
 namespace Cathei.Mathematics
 {
     /// <summary>
-    /// 16-byte deterministic floating point decimal type
+    /// 16-byte deterministic floating point decimal type.
     /// </summary>
     public readonly struct Incremental : IEquatable<Incremental>
     {
@@ -17,19 +17,25 @@ namespace Cathei.Mathematics
         public static readonly Incremental One = new Incremental(Unit, 0);
 
         /// <summary>
-        /// Maximum precision under decimal point with long type mantissa
+        /// Maximum precision under decimal point with long type mantissa.
         /// </summary>
         public const int Precision = 16;
 
         /// <summary>
-        /// Mantissa of 1
+        /// Mantissa of 1.
         /// </summary>
         public const long Unit = 1_0000_0000_0000_0000;
 
         /// <summary>
-        /// Lookup for power of 10s.
+        /// Square root of Unit.
         /// </summary>
+        public const long UnitSqrt = 1_0000_0000;
+
         public const int MaxPowersOf10Range = 20;
+
+        /// <summary>
+        /// Lookup table for power of 10s.
+        /// </summary>
         public static readonly long[] PowersOf10 = new long[MaxPowersOf10Range];
 
         static Incremental()
@@ -94,26 +100,26 @@ namespace Cathei.Mathematics
             return new Incremental(mantissa, b.Exponent);
         }
 
-        public static Incremental Subtract(Incremental a, Incremental b)
+        public static Incremental Subtract(in Incremental a, in Incremental b)
         {
             return Add(a, -b);
         }
 
-        public static Incremental Multiply(Incremental a, Incremental b)
+        public static Incremental Multiply(in Incremental a, in Incremental b)
         {
-            var mantissa = a.Mantissa * b.Mantissa / Unit;
+            var mantissa = (a.Mantissa / UnitSqrt) * (b.Mantissa / UnitSqrt);
             var exponent = a.Exponent + b.Exponent;
 
             return new Incremental(mantissa, exponent);
         }
 
-        public static Incremental Divide(Incremental a, Incremental b)
+        public static Incremental Divide(in Incremental a, in Incremental b)
         {
             if (b.Mantissa == 0)
                 throw new DivideByZeroException();
 
-            var mantissa = a.Mantissa * Unit / b.Mantissa;
-            var exponent = a.Exponent - b.Exponent;
+            var mantissa = a.Mantissa / (b.Mantissa / UnitSqrt);
+            var exponent = a.Exponent - b.Exponent + Precision / 2;
 
             return new Incremental(mantissa, exponent);
         }
@@ -145,14 +151,14 @@ namespace Cathei.Mathematics
         public static bool operator <(in Incremental a, in Incremental b)
         {
             if (a.Exponent < b.Exponent)
-                return true;
+                return a.Mantissa > 0;
             return a.Mantissa < b.Mantissa;
         }
 
         public static bool operator >(in Incremental a, in Incremental b)
         {
             if (a.Exponent > b.Exponent)
-                return true;
+                return a.Mantissa > 0;
             return a.Mantissa > b.Mantissa;
         }
 
