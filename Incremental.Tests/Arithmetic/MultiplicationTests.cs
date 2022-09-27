@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using NUnit.Framework;
+using static Cathei.Mathematics.Incremental;
 
 namespace Cathei.Mathematics.Tests;
 
@@ -17,10 +18,17 @@ public class MultiplicationTests
         new Incremental[] { 1_234_567_890, 0, 0 },
         new Incremental[] { 9_876_547_890L, 10, 98_765_478_900L },
         new Incremental[] { 555_555_555, 44_444_444, new(24_691_357_753_086_420, 16) },
-        new Incremental[] { 0.000_001m, 0.000_1m, new(Incremental.Unit, -10) },
+        new Incremental[] { 0.000_001m, 0.000_1m, new(Unit, -10) },
         new Incremental[] { 0.123_456m, 0.333m, new(41_110_848_000_000_000, -2) },
         new Incremental[] { 10.03m, 2.08m, 20.8624m },
         new Incremental[] { 99.999m, 1.111m, 111.098_889m },
+        new Incremental[] { new(Unit, 99), 100, new(Unit, 101) },
+        new Incremental[]
+        {
+            new(9 * Unit, 99),
+            new(9 * Unit, 99),
+            new(81 * Unit, 198)
+        },
         new Incremental[]
         {
             new(10_000_000_000_000_001, 0),
@@ -40,6 +48,6 @@ public class MultiplicationTests
     {
         Assert.AreEqual(result, a * b);
         Assert.AreEqual(result, b * a);
-        Assert.AreEqual(result, Incremental.Multiply(a, b));
+        Assert.AreEqual(result, Multiply(a, b));
     }
 }

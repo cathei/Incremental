@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using static Cathei.Mathematics.Incremental;
 
 namespace Cathei.Mathematics.Tests;
 
@@ -21,6 +22,19 @@ public class DivisionTests
         new Incremental[] { 0.123_456m, 0.333m, new(37_073_873_873_873_870, -1) },
         new Incremental[] { 10.03m, 2.08m, new(48_221_153_846_153_840, 0) },
         new Incremental[] { 99.999m, 11.111m, 9 },
+        new Incremental[] { new(Unit, 90), new(Unit, -10), new(Unit, 100) },
+        new Incremental[]
+        {
+            new(9 * Unit, 99),
+            new(9 * Unit, 99),
+            1
+        },
+        new Incremental[]
+        {
+            new(81 * Unit, 198),
+            new(9 * Unit, 99),
+            new(9 * Unit, 99)
+        },
         new Incremental[]
         {
             new(10_000_000_000_000_001, 0),
@@ -39,13 +53,13 @@ public class DivisionTests
     public void TestDivision(Incremental a, Incremental b, Incremental result)
     {
         Assert.AreEqual(result, a / b);
-        Assert.AreEqual(result, Incremental.Divide(a, b));
+        Assert.AreEqual(result, Divide(a, b));
     }
 
     [Test]
     public void TestDivideByZero()
     {
         Assert.Throws<DivideByZeroException>(() =>
-            Incremental.Divide(Incremental.One, Incremental.Zero));
+            Divide(One, Zero));
     }
 }

@@ -248,7 +248,7 @@ namespace Cathei.Mathematics
         public override string ToString()
         {
             // For debug purpose
-            return (Mantissa * (decimal)Math.Pow(10, Exponent - Precision)).ToString(CultureInfo.InvariantCulture);
+            return $"{(decimal)Mantissa / Unit:G}{Exponent:e+#;e-#;#}";
         }
 
         public int CompareTo(Incremental other)
