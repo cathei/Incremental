@@ -8,7 +8,7 @@ namespace Cathei.Mathematics
     /// <summary>
     /// 16-byte deterministic floating point decimal type.
     /// </summary>
-    public readonly struct Incremental : IEquatable<Incremental>
+    public readonly struct Incremental : IEquatable<Incremental>, IComparable<Incremental>
     {
         public readonly long Mantissa;
         public readonly long Exponent;
@@ -150,18 +150,29 @@ namespace Cathei.Mathematics
 
         public static bool operator <(in Incremental a, in Incremental b)
         {
-            if (a.Exponent < b.Exponent)
-                return a.Mantissa > 0;
-            return a.Mantissa < b.Mantissa;
+            if (a.Mantissa >= 0)
+            {
+                if (b.Mantissa <= 0)
+                    return false;
+
+                // both positive
+                if (a.Exponent == b.Exponent)
+                    return a.Mantissa < b.Mantissa;
+                return a.Exponent < b.Exponent;
+            }
+            else
+            {
+                if (b.Mantissa >= 0)
+                    return true;
+
+                // both negative
+                if (a.Exponent == b.Exponent)
+                    return a.Mantissa > b.Mantissa;
+                return a.Exponent > b.Exponent;
+            }
         }
 
-        public static bool operator >(in Incremental a, in Incremental b)
-        {
-            if (a.Exponent > b.Exponent)
-                return a.Mantissa > 0;
-            return a.Mantissa > b.Mantissa;
-        }
-
+        public static bool operator >(in Incremental a, in Incremental b) => b < a;
         public static bool operator <=(in Incremental a, in Incremental b) => !(a > b);
         public static bool operator >=(in Incremental a, in Incremental b) => !(a < b);
 
@@ -175,8 +186,22 @@ namespace Cathei.Mathematics
         public static implicit operator Incremental(decimal value)
         {
             // not preserving precision but quick
-            return new Incremental((long)(value * Unit), 0);
+            return new Incremental((long)(value * UnitSqrt), Precision / 2);
         }
+
+        #endregion
+
+        #region Math utilities
+
+        /// <summary>
+        /// Returns smaller value.
+        /// </summary>
+        public static Incremental Min(in Incremental a, in Incremental b) => a < b ? a : b;
+
+        /// <summary>
+        /// Returns bigger value.
+        /// </summary>
+        public static Incremental Max(in Incremental a, in Incremental b) => a > b ? a : b;
 
         #endregion
 
@@ -198,6 +223,13 @@ namespace Cathei.Mathematics
         {
             // For debug purpose
             return (Mantissa * (decimal)Math.Pow(10, Exponent - Precision)).ToString(CultureInfo.InvariantCulture);
+        }
+
+        public int CompareTo(Incremental other)
+        {
+            if (this == other)
+                return 0;
+            return this < other ? -1 : 1;
         }
 
         #endregion
