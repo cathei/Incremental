@@ -21,6 +21,7 @@ public class SubtractionTests
         new Incremental[] { 0.123_456m, 0.333m, -0.209_544m },
         new Incremental[] { 10.03m, 2.08m, 7.95m },
         new Incremental[] { 99.999m, 1.111m, 98.888m },
+        new Incremental[] { new(10_000_000_000_000_001, 0), 0, new(10_000_000_000_000_001, 0) },
         // new Incremental[] { new(1, 99), Incremental.One, new(1, 99) },
     };
 

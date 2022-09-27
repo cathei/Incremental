@@ -13,4 +13,10 @@ Incremental Deterministic Decimal Number type in C#
   * Means you can have 9,223,372,036,854,775,807 zeros
 
 ## Comparison
+| Category       | Incremental          | decimal   | BreakInfinity BigDouble |
+|----------------|----------------------|-----------|------------------------|
+| Size           | 16 bytes (long+long) | 16 bytes  | 16 bytes (double+long) |
+| Representation | decimal              | decimal   | binary                 |
+| Precision      | 17 digits            | 29 digits | 17 digits              |
+| Deterministic? | Yes                  | Yes       | No                     |
 

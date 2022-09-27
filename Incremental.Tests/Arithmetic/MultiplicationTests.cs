@@ -21,6 +21,18 @@ public class MultiplicationTests
         new Incremental[] { 0.123_456m, 0.333m, new(41_110_848_000_000_000, -2) },
         new Incremental[] { 10.03m, 2.08m, 20.8624m },
         new Incremental[] { 99.999m, 1.111m, 111.098_889m },
+        new Incremental[]
+        {
+            new(10_000_000_000_000_001, 0),
+            1,
+            new(10_000_000_000_000_001, 0)
+        },
+        new Incremental[]
+        {
+            new(99_999_999_999_999_999, 0),
+            new(99_999_999_999_999_999, 0),
+            new(99_999_999_999_999_998, 1)
+        },
     };
 
     [TestCaseSource(nameof(MultiplicationTestData))]

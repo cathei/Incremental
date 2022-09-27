@@ -22,6 +22,7 @@ public class AdditionTests
         new Incremental[] { 10.03m, 2.08m, 12.11m },
         new Incremental[] { 99.999m, 1.111m, 101.110m },
         // new Incremental[] { new(1, 99), Incremental.One, new(1, 99) },
+        new Incremental[] { new(10_000_000_000_000_001, 0), 0, new(10_000_000_000_000_001, 0) },
     };
 
     [TestCaseSource(nameof(AdditionTestData))]
