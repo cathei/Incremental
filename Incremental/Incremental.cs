@@ -153,7 +153,7 @@ namespace Cathei.Mathematics
 
         public static bool operator <(in Incremental a, in Incremental b)
         {
-            if (a.Mantissa >= 0)
+            if (a.Mantissa > 0)
             {
                 if (b.Mantissa <= 0)
                     return false;
@@ -163,16 +163,19 @@ namespace Cathei.Mathematics
                     return a.Mantissa < b.Mantissa;
                 return a.Exponent < b.Exponent;
             }
-            else
+
+            if (a.Mantissa < 0)
             {
                 if (b.Mantissa >= 0)
                     return true;
 
                 // both negative
                 if (a.Exponent == b.Exponent)
-                    return a.Mantissa > b.Mantissa;
+                    return a.Mantissa < b.Mantissa;
                 return a.Exponent > b.Exponent;
             }
+
+            return b.Mantissa > 0;
         }
 
         public static bool operator >(in Incremental a, in Incremental b) => b < a;
@@ -183,10 +186,10 @@ namespace Cathei.Mathematics
 
         #region Conversion operators
 
-        public static implicit operator Incremental(int value) => new Incremental(value, Precision);
-        public static implicit operator Incremental(long value) => new Incremental(value, Precision);
-
-        public static implicit operator Incremental(in decimal value)
+        /// <summary>
+        /// Convert from decimal.
+        /// </summary>
+        public static Incremental FromDecimal(decimal value)
         {
             const int scaleMask = 0x00FF0000;
             const int scaleShift = 16;
@@ -238,18 +241,54 @@ namespace Cathei.Mathematics
             throw new OverflowException();
         }
 
-        public static explicit operator decimal(in Incremental value) => ToDecimal(value);
-        public static explicit operator long(in Incremental value) => (long)ToDecimal(value);
-        public static explicit operator int(in Incremental value) => (int)ToDecimal(value);
+        /// <summary>
+        /// Convert from double.
+        /// Keep in mind that you will lose determinism when you operate with double.
+        /// </summary>
+        public static Incremental FromDouble(double value)
+        {
+            if (double.IsInfinity(value))
+                throw new ArgumentException("Infinity is not supported", nameof(value));
+
+            if (double.IsNaN(value))
+                throw new ArgumentException("NaN is not supported", nameof(value));
+
+            bool isNegative = value < 0;
+            value = isNegative ? -value : value;
+
+            if (value == 0)
+                return Zero;
+
+            long exponent = (long)Math.Log10(value);
+            long mantissa = (long)(value * Math.Pow(10, Precision - exponent));
+
+            return new Incremental(isNegative ? -mantissa : mantissa, exponent);
+        }
 
         /// <summary>
         /// Conversion to double.
         /// Keep in mind that you will lose determinism when you operate with double.
+        /// Can throw OverflowException.
         /// </summary>
         public static double ToDouble(in Incremental value)
         {
-            return 0.0;
+            return value.Mantissa * Math.Pow(10, value.Exponent - Precision);
         }
+
+        public static implicit operator Incremental(in decimal value) => FromDecimal(value);
+        public static explicit operator decimal(in Incremental value) => ToDecimal(value);
+
+        public static implicit operator Incremental(long value) => new Incremental(value, Precision);
+        public static explicit operator long(in Incremental value) => (long)ToDecimal(value);
+
+        public static implicit operator Incremental(int value) => new Incremental(value, Precision);
+        public static explicit operator int(in Incremental value) => (int)ToDecimal(value);
+
+        public static implicit operator Incremental(double value) => FromDouble(value);
+        public static explicit operator double(in Incremental value) => ToDouble(value);
+
+        public static implicit operator Incremental(float value) => FromDouble(value);
+        public static explicit operator float(in Incremental value) => (float)ToDouble(value);
 
         #endregion
 
