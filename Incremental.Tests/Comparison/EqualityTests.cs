@@ -42,7 +42,6 @@ public class EqualityTests
     {
         new Incremental[] { new(0, 0), new(0, 100) },
         new Incremental[] { new(Incremental.Unit, 0), new(1, Incremental.Precision) },
-        new Incremental[] { new(Incremental.UnitSqrt, 0), new(1, Incremental.Precision / 2) },
     };
 
     [TestCaseSource(nameof(CommonEqualityTestData))]

@@ -8,7 +8,7 @@ namespace Cathei.Mathematics
     /// <summary>
     /// 16-byte deterministic floating point decimal type.
     /// </summary>
-    public readonly struct Incremental : IEquatable<Incremental>, IComparable<Incremental>
+    public readonly partial struct Incremental : IEquatable<Incremental>, IComparable<Incremental>
     {
         /// <summary>
         /// Decimal part of the value.
@@ -23,31 +23,6 @@ namespace Cathei.Mathematics
         public readonly long Exponent;
 
         /// <summary>
-        /// Maximum precision under decimal point with long type mantissa.
-        /// </summary>
-        public const int Precision = 16;
-
-        /// <summary>
-        /// Mantissa of 1.
-        /// </summary>
-        public const long Unit = 1_0000_0000_0000_0000;
-
-        /// <summary>
-        /// Square root of Unit.
-        /// </summary>
-        public const long UnitSqrt = 1_0000_0000;
-
-        /// <summary>
-        /// Value of number 0.
-        /// </summary>
-        public static readonly Incremental Zero = new Incremental(0, 0);
-
-        /// <summary>
-        /// Value of number 1.
-        /// </summary>
-        public static readonly Incremental One = new Incremental(Unit, 0);
-
-        /// <summary>
         /// Construct Incremental value manually. The value will be normalized.
         /// (Unit, 0) will be same as (1, Precision).
         /// </summary>
@@ -58,8 +33,7 @@ namespace Cathei.Mathematics
             // zero
             if (mantissa == 0)
             {
-                this.Mantissa = 0;
-                this.Exponent = 0;
+                Mantissa = Exponent = 0;
                 return;
             }
 
@@ -79,8 +53,8 @@ namespace Cathei.Mathematics
                 exponent += adjustment;
             }
 
-            this.Mantissa = mantissa;
-            this.Exponent = exponent;
+            Mantissa = mantissa;
+            Exponent = exponent;
         }
 
         #region Arithmetic operations
@@ -189,11 +163,33 @@ namespace Cathei.Mathematics
         public static implicit operator Incremental(int value) => new Incremental(value, Precision);
         public static implicit operator Incremental(long value) => new Incremental(value, Precision);
 
-        public static implicit operator Incremental(decimal value)
+        public static implicit operator Incremental(in decimal value)
         {
-            // not preserving precision but quick
-            return new Incremental((long)(value * UnitSqrt), Precision / 2);
+            const int scaleMask = 0x00FF0000;
+            const int scaleShift = 16;
+
+            var bits = decimal.GetBits(value);
+            var exponent = (bits[3] & scaleMask) >> scaleShift; // extract exponent
+
+            // create new decimal using same integer bits, but new scale
+            var mantissa = new decimal(bits[0], bits[1], bits[2], value < 0, Precision);
+            return new Incremental((long)mantissa, exponent);
         }
+
+        /// <summary>
+        /// Conversion to decimal.
+        /// Can throw OverflowException.
+        /// </summary>
+        public static decimal ToDecimal(in Incremental value)
+        {
+            if (value.Exponent >= MaxPowersOf10Range)
+                throw new OverflowException();
+            return (decimal)value.Mantissa / Unit * PowersOf10[value.Exponent];
+        }
+
+        public static explicit operator decimal(in Incremental value) => ToDecimal(value);
+        public static explicit operator long(in Incremental value) => (long)ToDecimal(value);
+        public static explicit operator int(in Incremental value) => (int)ToDecimal(value);
 
         #endregion
 
@@ -256,50 +252,6 @@ namespace Cathei.Mathematics
             if (this == other)
                 return 0;
             return this < other ? -1 : 1;
-        }
-
-        #endregion
-
-        #region Private utilities
-
-        private const int MaxPowersOf10Range = 20;
-
-        /// <summary>
-        /// Lookup table for power of 10s.
-        /// </summary>
-        private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range];
-
-        static Incremental()
-        {
-            long value = 1;
-
-            for (int i = 0; i < MaxPowersOf10Range; ++i)
-            {
-                PowersOf10[i] = value;
-                value *= 10;
-            }
-        }
-
-        /// <summary>
-        /// Internal common log for normalization.
-        /// </summary>
-        private static int Log10Int(long value)
-        {
-            int result = 0;
-            int eval = 16;
-
-            while (eval > 0)
-            {
-                if (value >= PowersOf10[eval])
-                {
-                    result += eval;
-                    value /= PowersOf10[eval];
-                }
-
-                eval /= 2;
-            }
-
-            return result;
         }
 
         #endregion
