@@ -54,7 +54,7 @@ public class DecimalConversionTests
         new object[] { new Incremental(2147483647L, Precision), (decimal)int.MaxValue },
         new object[] { new Incremental(-2147483648L, Precision), (decimal)int.MinValue },
 
-        // last digit will not be preserved.
+        // last two digit will not be preserved.
         // decimal can be used for bigger range than long
         new object[] { new Incremental(92_233_720_368_547_759L, Precision + 2), long.MaxValue + 93m },
         new object[] { new Incremental(-92_233_720_368_547_759L, Precision + 2), long.MinValue - 92m },

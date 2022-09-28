@@ -223,12 +223,6 @@ namespace Cathei.Mathematics
                 Precision - exponent + scale);
         }
 
-        // 79,228,162,514,264,337,593,543,950,335
-        // 18,446,744,073,709,551,615
-        //  9,223,372,036,854,775,807
-        //              9,223,372,036,854,775,807
-        // 10,000,000,000,000,000
-
         /// <summary>
         /// Conversion to decimal.
         /// Can throw OverflowException.
@@ -247,6 +241,15 @@ namespace Cathei.Mathematics
         public static explicit operator decimal(in Incremental value) => ToDecimal(value);
         public static explicit operator long(in Incremental value) => (long)ToDecimal(value);
         public static explicit operator int(in Incremental value) => (int)ToDecimal(value);
+
+        /// <summary>
+        /// Conversion to double.
+        /// Keep in mind that you will lose determinism when you operate with double.
+        /// </summary>
+        public static double ToDouble(in Incremental value)
+        {
+            return 0.0;
+        }
 
         #endregion
 

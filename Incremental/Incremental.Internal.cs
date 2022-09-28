@@ -5,9 +5,6 @@ using System.Globalization;
 
 namespace Cathei.Mathematics
 {
-    /// <summary>
-    /// 16-byte deterministic floating point decimal type.
-    /// </summary>
     public readonly partial struct Incremental
     {
         #region Internal utilities
