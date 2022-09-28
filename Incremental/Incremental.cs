@@ -175,8 +175,8 @@ namespace Cathei.Mathematics
             var exponent = (bits[3] & scaleMask) >> scaleShift; // extract exponent
 
             // create new decimal using same integer bits, but new scale
-            var mantissa = new decimal(bits[0], bits[1], bits[2], value < 0, Precision);
-            return new Incremental((long)mantissa, exponent);
+            var mantissa = new decimal(bits[0], bits[1], bits[2], value < 0, 0);
+            return new Incremental((long)mantissa, Precision - exponent);
         }
 
         /// <summary>
