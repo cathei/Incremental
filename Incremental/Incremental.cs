@@ -23,6 +23,26 @@ namespace Cathei.Mathematics
         public readonly long Exponent;
 
         /// <summary>
+        /// Maximum precision under decimal point with long type mantissa.
+        /// </summary>
+        public const int Precision = 16;
+
+        /// <summary>
+        /// Mantissa of 1.
+        /// </summary>
+        public const long Unit = 1_0000_0000_0000_0000L;
+
+        /// <summary>
+        /// Value of number 0.
+        /// </summary>
+        public static readonly Incremental Zero = new Incremental(0, 0);
+
+        /// <summary>
+        /// Value of number 1.
+        /// </summary>
+        public static readonly Incremental One = new Incremental(Unit, 0);
+
+        /// <summary>
         /// Construct Incremental value manually. The value will be normalized.
         /// (Unit, 0) will be same as (1, Precision).
         /// </summary>
@@ -86,7 +106,7 @@ namespace Cathei.Mathematics
         public static Incremental Multiply(in Incremental a, in Incremental b)
         {
             // calculate in decimal
-            var mantissa = (decimal)a.Mantissa / Unit * b.Mantissa;
+            var mantissa = ToDecimalNormalized(a.Mantissa) * b.Mantissa;
             var exponent = a.Exponent + b.Exponent;
 
             return new Incremental((long)mantissa, exponent);
@@ -98,7 +118,7 @@ namespace Cathei.Mathematics
                 throw new DivideByZeroException();
 
             // calculate in decimal
-            var mantissa = (decimal)a.Mantissa / b.Mantissa * Unit;
+            var mantissa = a.Mantissa / ToDecimalNormalized(b.Mantissa);
             var exponent = a.Exponent - b.Exponent;
 
             return new Incremental((long)mantissa, exponent);
@@ -173,11 +193,41 @@ namespace Cathei.Mathematics
 
             var bits = decimal.GetBits(value);
             var exponent = (bits[3] & scaleMask) >> scaleShift; // extract exponent
+            bool isNegative = value < 0;
 
             // create new decimal using same integer bits, but new scale
-            var mantissa = new decimal(bits[0], bits[1], bits[2], value < 0, 0);
-            return new Incremental((long)mantissa, Precision - exponent);
+            var mantissa = new decimal(bits[0], bits[1], bits[2], false, 0);
+
+            byte scale = 0;
+            decimal threshold = Unit * 100L;
+
+            // numbers with very long precision to fit in long type
+            while (mantissa > threshold)
+            {
+                scale++;
+
+                // 10 is max scale possible here
+                if (scale >= 10)
+                    break;
+
+                threshold *= 10;
+            }
+
+            if (scale > 0)
+            {
+                mantissa = new decimal(bits[0], bits[1], bits[2], false, scale);
+            }
+
+            return new Incremental(
+                isNegative ? -(long)mantissa : (long)mantissa,
+                Precision - exponent + scale);
         }
+
+        // 79,228,162,514,264,337,593,543,950,335
+        // 18,446,744,073,709,551,615
+        //  9,223,372,036,854,775,807
+        //              9,223,372,036,854,775,807
+        // 10,000,000,000,000,000
 
         /// <summary>
         /// Conversion to decimal.
@@ -185,9 +235,13 @@ namespace Cathei.Mathematics
         /// </summary>
         public static decimal ToDecimal(in Incremental value)
         {
-            if (value.Exponent >= MaxPowersOf10Range)
-                throw new OverflowException();
-            return (decimal)value.Mantissa / Unit * PowersOf10[value.Exponent];
+            if (value.Exponent < 0)
+                return ToDecimalNormalized(value.Mantissa) / PowersOf10[-value.Exponent];
+            if (value.Exponent <= Precision)
+                return ToDecimalNormalized(value.Mantissa, (byte)(Precision - value.Exponent));
+            if (value.Exponent < MaxPowersOf10Range + Precision)
+                return ToDecimalNormalized(value.Mantissa, 0) * PowersOf10[value.Exponent - Precision];
+            throw new OverflowException();
         }
 
         public static explicit operator decimal(in Incremental value) => ToDecimal(value);

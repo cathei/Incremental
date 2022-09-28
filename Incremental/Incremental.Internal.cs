@@ -10,28 +10,12 @@ namespace Cathei.Mathematics
     /// </summary>
     public readonly partial struct Incremental
     {
-        /// <summary>
-        /// Maximum precision under decimal point with long type mantissa.
-        /// </summary>
-        public const int Precision = 16;
+        #region Internal utilities
 
         /// <summary>
-        /// Mantissa of 1.
+        /// Maximum powers of 10.
+        /// It will be inaccurate in long type when make this number higher.
         /// </summary>
-        public const long Unit = 1_0000_0000_0000_0000;
-
-        /// <summary>
-        /// Value of number 0.
-        /// </summary>
-        public static readonly Incremental Zero = new Incremental(0, 0);
-
-        /// <summary>
-        /// Value of number 1.
-        /// </summary>
-        public static readonly Incremental One = new Incremental(Unit, 0);
-
-        #region Private utilities
-
         private const int MaxPowersOf10Range = 20;
 
         /// <summary>
@@ -70,6 +54,17 @@ namespace Cathei.Mathematics
             }
 
             return result;
+        }
+
+        private static decimal ToDecimalNormalized(long value, byte scale = Precision)
+        {
+            bool isNegative = value < 0;
+            value = isNegative ? -value : value;
+
+            int lower = (int)(value & 0xFFFF_FFFF);
+            int upper = (int)((value >> 32) & 0x7FFF_FFFF);
+
+            return new decimal(lower, upper, 0, isNegative, scale);
         }
 
         #endregion
