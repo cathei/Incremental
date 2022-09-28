@@ -1,6 +1,9 @@
 # Incremental 📈
 Incremental Deterministic Decimal Number type in C#
 
+> **Warning**  
+> The product is under development, not production ready yet.
+
 ## Features
 * 128-bit number type
   * 1-bit sign
