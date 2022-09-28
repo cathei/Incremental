@@ -33,4 +33,20 @@ public class AdditionTests
         Assert.AreEqual(result, b + a);
         Assert.AreEqual(result, Incremental.Add(a, b));
     }
+
+    public static IEnumerable<Incremental[]> IncrementTestData = new List<Incremental[]>
+    {
+        new Incremental[] { -1, 0 },
+        new Incremental[] { 0, 1 },
+        new Incremental[] { 1, 2 },
+        new Incremental[] { 1000, 1001 },
+        new Incremental[] { 0.001m, 1.001m },
+        new Incremental[] { -0.001m, 0.999m },
+    };
+
+    [TestCaseSource(nameof(IncrementTestData))]
+    public void TestIncrement(Incremental value, Incremental result)
+    {
+        Assert.AreEqual(result, ++value);
+    }
 }

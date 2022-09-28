@@ -33,4 +33,20 @@ public class SubtractionTests
         Assert.AreEqual(result, -b + a);
         Assert.AreEqual(result, Incremental.Subtract(a, b));
     }
+
+    public static IEnumerable<Incremental[]> DecrementTestData = new List<Incremental[]>
+    {
+        new Incremental[] { 0, -1 },
+        new Incremental[] { 1, 0 },
+        new Incremental[] { 2, 1 },
+        new Incremental[] { 1000, 999 },
+        new Incremental[] { 1.001m, 0.001m },
+        new Incremental[] { 0.999m, -0.001m },
+    };
+
+    [TestCaseSource(nameof(DecrementTestData))]
+    public void TestDecrement(Incremental value, Incremental result)
+    {
+        Assert.AreEqual(result, --value);
+    }
 }
