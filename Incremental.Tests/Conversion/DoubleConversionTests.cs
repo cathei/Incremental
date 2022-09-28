@@ -29,8 +29,8 @@ public class DoubleConversionTests
     public void TestConvertFloat(Incremental a, float b, float delta)
     {
         Assert.AreEqual(b, (float)a, delta);
-        Assert.True(a > b - delta, "Value: {0} was not bigger than {1} - {2}", a, b, delta);
-        Assert.True(a < b + delta, "Value: {0} was not smaller than {1} + {2}", a, b, delta);
+        Assert.True(a > (Incremental)(b - delta), "Value: {0} was not bigger than {1} - {2}", a, b, delta);
+        Assert.True(a < (Incremental)(b + delta), "Value: {0} was not smaller than {1} + {2}", a, b, delta);
     }
 
     public static IEnumerable<object[]> ConvertDoubleTestData = new List<object[]>
@@ -58,8 +58,8 @@ public class DoubleConversionTests
     public void TestConvertDouble(Incremental a, double b, double delta)
     {
         Assert.AreEqual(b, (double)a, delta);
-        Assert.True(a > b - delta, "Value: {0} was not bigger than {1} - {2}", a, b, delta);
-        Assert.True(a < b + delta, "Value: {0} was not smaller than {1} + {2}", a, b, delta);
+        Assert.True(a > (Incremental)(b - delta), "Value: {0} was not bigger than {1} - {2}", a, b, delta);
+        Assert.True(a < (Incremental)(b + delta), "Value: {0} was not smaller than {1} + {2}", a, b, delta);
     }
 
 }

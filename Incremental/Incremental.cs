@@ -244,6 +244,7 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Convert from double.
         /// Keep in mind that you will lose determinism when you operate with double.
+        /// For that reason, double conversions will be explicit.
         /// </summary>
         public static Incremental FromDouble(double value)
         {
@@ -284,10 +285,10 @@ namespace Cathei.Mathematics
         public static implicit operator Incremental(int value) => new Incremental(value, Precision);
         public static explicit operator int(in Incremental value) => (int)ToDecimal(value);
 
-        public static implicit operator Incremental(double value) => FromDouble(value);
+        public static explicit operator Incremental(double value) => FromDouble(value);
         public static explicit operator double(in Incremental value) => ToDouble(value);
 
-        public static implicit operator Incremental(float value) => FromDouble(value);
+        public static explicit operator Incremental(float value) => FromDouble(value);
         public static explicit operator float(in Incremental value) => (float)ToDouble(value);
 
         #endregion
