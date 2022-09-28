@@ -117,6 +117,9 @@ namespace Cathei.Mathematics
         public static Incremental operator *(in Incremental a, in Incremental b) => Multiply(a, b);
         public static Incremental operator /(in Incremental a, in Incremental b) => Divide(a, b);
 
+        public static Incremental operator ++(in Incremental value) => value + One;
+        public static Incremental operator --(in Incremental value) => value - One;
+
         #endregion
 
         #region Comparing operations
