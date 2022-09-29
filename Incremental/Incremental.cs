@@ -230,7 +230,7 @@ namespace Cathei.Mathematics
                 return ToDecimalNormalized(value.Mantissa) / PowersOf10[-value.Exponent];
             if (value.Exponent <= Precision)
                 return ToDecimalNormalized(value.Mantissa, (byte)(Precision - value.Exponent));
-            if (value.Exponent < MaxPowersOf10Range + Precision)
+            if (value.Exponent < MaxPowersOf10Range + Precision + 1)
                 return ToDecimalNormalized(value.Mantissa, 0) * PowersOf10[value.Exponent - Precision];
             throw new OverflowException();
         }

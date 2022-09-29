@@ -18,63 +18,61 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Lookup table for power of 10s.
         /// </summary>
-        private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range];
+        private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range + 1];
+        private static readonly Func<long, long>[] MultiplyPow10Table = new Func<long, long>[MaxPowersOf10Range * 2 + 1];
 
         static Incremental()
         {
             long value = 1;
 
-            for (int i = 0; i < MaxPowersOf10Range; ++i)
+            for (int i = 0; i <= MaxPowersOf10Range; ++i)
             {
                 PowersOf10[i] = value;
                 value *= 10;
             }
+            
+            MultiplyPow10Table[MaxPowersOf10Range + 0] = x => x;
+            MultiplyPow10Table[MaxPowersOf10Range + 1] = x => x * 10;
+            MultiplyPow10Table[MaxPowersOf10Range + 2] = x => x * 100;
+            MultiplyPow10Table[MaxPowersOf10Range + 3] = x => x * 1_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 4] = x => x * 10_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 5] = x => x * 100_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 6] = x => x * 1_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 7] = x => x * 10_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 8] = x => x * 100_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 9] = x => x * 1_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 10] = x => x * 10_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 11] = x => x * 100_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 12] = x => x * 1_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 13] = x => x * 10_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 14] = x => x * 100_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 15] = x => x * 1_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 16] = x => x * 10_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 17] = x => x * 100_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + 18] = x => x * 1_000_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -1] = x => x / 10;
+            MultiplyPow10Table[MaxPowersOf10Range + -2] = x => x / 100;
+            MultiplyPow10Table[MaxPowersOf10Range + -3] = x => x / 1_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -4] = x => x / 10_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -5] = x => x / 100_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -6] = x => x / 1_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -7] = x => x / 10_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -8] = x => x / 100_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -9] = x => x / 1_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -10] = x => x / 10_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -11] = x => x / 100_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -12] = x => x / 1_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -13] = x => x / 10_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -14] = x => x / 100_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -15] = x => x / 1_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -16] = x => x / 10_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -17] = x => x / 100_000_000_000_000_000;
+            MultiplyPow10Table[MaxPowersOf10Range + -18] = x => x / 1_000_000_000_000_000_000;
         }
 
         private static long MultiplyPow10(long value, int pow)
         {
-            switch (pow)
-            {
-                case 0: return value;
-                case 1: return value * 10;
-                case 2: return value * 100;
-                case 3: return value * 1_000;
-                case 4: return value * 10_000;
-                case 5: return value * 100_000;
-                case 6: return value * 1_000_000;
-                case 7: return value * 10_000_000;
-                case 8: return value * 100_000_000;
-                case 9: return value * 1_000_000_000;
-                case 10: return value * 10_000_000_000;
-                case 11: return value * 100_000_000_000;
-                case 12: return value * 1_000_000_000_000;
-                case 13: return value * 10_000_000_000_000;
-                case 14: return value * 100_000_000_000_000;
-                case 15: return value * 1_000_000_000_000_000;
-                case 16: return value * 10_000_000_000_000_000;
-                case 17: return value * 100_000_000_000_000_000;
-                case 18: return value * 1_000_000_000_000_000_000;
-                case -1: return value / 10;
-                case -2: return value / 100;
-                case -3: return value / 1_000;
-                case -4: return value / 10_000;
-                case -5: return value / 100_000;
-                case -6: return value / 1_000_000;
-                case -7: return value / 10_000_000;
-                case -8: return value / 100_000_000;
-                case -9: return value / 1_000_000_000;
-                case -10: return value / 10_000_000_000;
-                case -11: return value / 100_000_000_000;
-                case -12: return value / 1_000_000_000_000;
-                case -13: return value / 10_000_000_000_000;
-                case -14: return value / 100_000_000_000_000;
-                case -15: return value / 1_000_000_000_000_000;
-                case -16: return value / 10_000_000_000_000_000;
-                case -17: return value / 100_000_000_000_000_000;
-                case -18: return value / 1_000_000_000_000_000_000;
-            }
-
-            return 0;
+            return MultiplyPow10Table[MaxPowersOf10Range + pow](value);
         }
 
         /// <summary>

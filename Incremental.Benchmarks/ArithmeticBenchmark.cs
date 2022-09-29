@@ -2,9 +2,11 @@
 
 using System;
 using BenchmarkDotNet.Attributes;
+using BreakInfinity;
 
 namespace Cathei.Mathematics.Benchmarks;
 
+[ShortRunJob]
 public class ArithmeticBenchmark
 {
     private readonly double doubleA;
@@ -16,18 +18,24 @@ public class ArithmeticBenchmark
     private readonly Incremental incrementalA;
     private readonly Incremental incrementalB;
 
+    private readonly BigDouble bigDoubleA;
+    private readonly BigDouble bigDoubleB;
+
     private static readonly Random Rng = new Random();
 
     public ArithmeticBenchmark()
     {
-        doubleA = Rng.NextDouble();
-        doubleB = Rng.NextDouble();
+        doubleA = Rng.NextDouble() * 200000 - 10000;
+        doubleB = Rng.NextDouble() * 200000 - 10000;
 
         decimalA = (decimal)doubleA;
         decimalB = (decimal)doubleB;
 
         incrementalA = (Incremental)doubleA;
         incrementalB = (Incremental)doubleB;
+
+        bigDoubleA = doubleA;
+        bigDoubleB = doubleB;
     }
 
     [Benchmark]
@@ -40,6 +48,9 @@ public class ArithmeticBenchmark
     public Incremental IncrementalAdd() => incrementalA + incrementalB;
 
     [Benchmark]
+    public BigDouble BigDoubleAdd() => bigDoubleA + bigDoubleB;
+    
+    [Benchmark]
     public double DoubleSub() => doubleA - doubleB;
 
     [Benchmark]
@@ -47,6 +58,9 @@ public class ArithmeticBenchmark
 
     [Benchmark]
     public Incremental IncrementalSub() => incrementalA - incrementalB;
+
+    [Benchmark]
+    public BigDouble BigDoubleSub() => bigDoubleA - bigDoubleB;
 
     [Benchmark]
     public double DoubleMul() => doubleA * doubleB;
@@ -58,6 +72,9 @@ public class ArithmeticBenchmark
     public Incremental IncrementalMul() => incrementalA * incrementalB;
 
     [Benchmark]
+    public BigDouble BigDoubleMul() => bigDoubleA * bigDoubleB;
+
+    [Benchmark]
     public double DoubleDiv() => doubleA / doubleB;
 
     [Benchmark]
@@ -65,5 +82,8 @@ public class ArithmeticBenchmark
 
     [Benchmark]
     public Incremental IncrementalDiv() => incrementalA / incrementalB;
+
+    [Benchmark]
+    public BigDouble BigDoubleDiv() => bigDoubleA / bigDoubleB;
 }
 
