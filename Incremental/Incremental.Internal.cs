@@ -13,7 +13,7 @@ namespace Cathei.Mathematics
         /// Maximum powers of 10.
         /// It will be inaccurate in long type when make this number higher.
         /// </summary>
-        private const int MaxPowersOf10Range = 20;
+        private const int MaxPowersOf10Range = 18;
 
         /// <summary>
         /// Lookup table for power of 10s.
@@ -31,6 +31,52 @@ namespace Cathei.Mathematics
             }
         }
 
+        private static long MultiplyPow10(long value, int pow)
+        {
+            switch (pow)
+            {
+                case 0: return value;
+                case 1: return value * 10;
+                case 2: return value * 100;
+                case 3: return value * 1_000;
+                case 4: return value * 10_000;
+                case 5: return value * 100_000;
+                case 6: return value * 1_000_000;
+                case 7: return value * 10_000_000;
+                case 8: return value * 100_000_000;
+                case 9: return value * 1_000_000_000;
+                case 10: return value * 10_000_000_000;
+                case 11: return value * 100_000_000_000;
+                case 12: return value * 1_000_000_000_000;
+                case 13: return value * 10_000_000_000_000;
+                case 14: return value * 100_000_000_000_000;
+                case 15: return value * 1_000_000_000_000_000;
+                case 16: return value * 10_000_000_000_000_000;
+                case 17: return value * 100_000_000_000_000_000;
+                case 18: return value * 1_000_000_000_000_000_000;
+                case -1: return value / 10;
+                case -2: return value / 100;
+                case -3: return value / 1_000;
+                case -4: return value / 10_000;
+                case -5: return value / 100_000;
+                case -6: return value / 1_000_000;
+                case -7: return value / 10_000_000;
+                case -8: return value / 100_000_000;
+                case -9: return value / 1_000_000_000;
+                case -10: return value / 10_000_000_000;
+                case -11: return value / 100_000_000_000;
+                case -12: return value / 1_000_000_000_000;
+                case -13: return value / 10_000_000_000_000;
+                case -14: return value / 100_000_000_000_000;
+                case -15: return value / 1_000_000_000_000_000;
+                case -16: return value / 10_000_000_000_000_000;
+                case -17: return value / 100_000_000_000_000_000;
+                case -18: return value / 1_000_000_000_000_000_000;
+            }
+
+            return 0;
+        }
+
         /// <summary>
         /// Internal common log for normalization.
         /// </summary>
@@ -44,7 +90,7 @@ namespace Cathei.Mathematics
                 if (value >= PowersOf10[eval])
                 {
                     result += eval;
-                    value /= PowersOf10[eval];
+                    value = MultiplyPow10(value, -eval);
                 }
 
                 eval /= 2;
@@ -63,6 +109,7 @@ namespace Cathei.Mathematics
 
             return new decimal(lower, upper, 0, isNegative, scale);
         }
+
 
         #endregion
     }

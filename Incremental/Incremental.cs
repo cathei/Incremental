@@ -60,17 +60,11 @@ namespace Cathei.Mathematics
             long abs = Math.Abs(mantissa);
 
             // normalize
-            if (abs < Unit)
+            if (abs < Unit || abs >= Unit * 10)
             {
                 var adjustment = Precision - Log10Int(abs);
-                mantissa *= PowersOf10[adjustment];
+                mantissa = MultiplyPow10(mantissa, adjustment);
                 exponent -= adjustment;
-            }
-            else if (abs >= Unit * 10)
-            {
-                var adjustment = Log10Int(abs) - Precision;
-                mantissa /= PowersOf10[adjustment];
-                exponent += adjustment;
             }
 
             Mantissa = mantissa;
@@ -93,7 +87,7 @@ namespace Cathei.Mathematics
 
             // match to bigger exponent
             var mantissa = b.Mantissa;
-            mantissa += a.Mantissa / PowersOf10[exponentDiff];
+            mantissa += MultiplyPow10(a.Mantissa, -(int)exponentDiff);
 
             return new Incremental(mantissa, b.Exponent);
         }
