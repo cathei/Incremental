@@ -70,7 +70,7 @@ namespace Cathei.Mathematics
             MultiplyPow10Table[MaxPowersOf10Range + -18] = x => x / 1_000_000_000_000_000_000;
         }
 
-        private static long MultiplyPow10(long value, int pow)
+        private static long MultiplyPow10(long value, long pow)
         {
             return MultiplyPow10Table[MaxPowersOf10Range + pow](value);
         }

@@ -87,7 +87,7 @@ namespace Cathei.Mathematics
 
             // match to bigger exponent
             var mantissa = b.Mantissa;
-            mantissa += MultiplyPow10(a.Mantissa, -(int)exponentDiff);
+            mantissa += MultiplyPow10(a.Mantissa, -exponentDiff);
 
             return new Incremental(mantissa, b.Exponent);
         }
@@ -319,6 +319,28 @@ namespace Cathei.Mathematics
         /// </summary>
         public static Incremental Pow10(long power) => new Incremental(Unit, power);
 
+        /// <summary>
+        /// Truncate the value. If exponent is specified, the digit of 1E+exponent will be least significant.
+        /// </summary>
+        public static Incremental Truncate(in Incremental value, long exponent = 0)
+        {
+            if (exponent > value.Exponent)
+                return Zero;
+
+            long exponentDiff = Precision - value.Exponent + exponent;
+
+            // over max significant digits
+            if (exponentDiff < 0)
+                return value;
+
+            long mantissa = value.Mantissa;
+
+            mantissa = MultiplyPow10(mantissa, -exponentDiff);
+            mantissa = MultiplyPow10(mantissa, exponentDiff);
+
+            return new Incremental(mantissa, value.Exponent);
+        }
+        
         #endregion
 
         #region Override methods
