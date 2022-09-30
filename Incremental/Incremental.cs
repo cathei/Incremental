@@ -157,16 +157,28 @@ namespace Cathei.Mathematics
                 return Zero;
 
             // calculate in decimal
-            var mantissa = (long)(a.Mantissa / ToDecimalNormalized(b.Mantissa));
-            var exponent = a.Exponent - b.Exponent;
+            // var mantissa = (long)(a.Mantissa / ToDecimalNormalized(b.Mantissa));
             
-            if (mantissa < Unit && mantissa > -Unit)
+            bool aNegative = a.Mantissa < 0;
+            bool bNegative = b.Mantissa < 0;
+
+            long mantissa = (long)DivideUInt64(
+                (ulong)(aNegative ? -a.Mantissa : a.Mantissa),
+                (ulong)(bNegative ? -b.Mantissa : b.Mantissa));
+            
+            long exponent = a.Exponent - b.Exponent;
+
+            if (mantissa < Unit)
             {
                 // in this case mantissa abs is between [Unit / 10, Unit)
                 mantissa *= 10;
                 exponent--;
             }
 
+            // apply sign
+            if (aNegative ^ bNegative)
+                mantissa = -mantissa;
+            
             return new Incremental(mantissa, exponent, new AlreadyNormalized());
         }
 

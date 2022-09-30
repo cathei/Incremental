@@ -7,7 +7,7 @@ Incremental Deterministic Decimal Number type in C#
 ## Features
 * 128-bit number type
   * 1-bit sign
-  * 58-bit mantissa
+  * 57-bit mantissa
   * 64-bit exponent
 * Decimal representation (No binary rounding error)
 * Deterministic math calculation
