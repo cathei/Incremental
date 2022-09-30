@@ -19,6 +19,13 @@ namespace Cathei.Mathematics
         /// Lookup table for power of 10s.
         /// </summary>
         private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range + 1];
+        
+        /// <summary>
+        /// Pre-calculated 9,007,199,254,740,992 / 10,000,000,000,000,000 (Unit) value under decimal point.
+        /// Used for multiplication.
+        /// https://stackoverflow.com/questions/41183935/why-does-gcc-use-multiplication-by-a-strange-number-in-implementing-integer-divi
+        /// </summary>
+        private const ulong InverseUnitShift53 = 0xE695_94BE_C44D_E15B;
 
         static Incremental()
         {
@@ -120,6 +127,41 @@ namespace Cathei.Mathematics
             return result;
         }
 
+        /// <summary>
+        /// Multiply two uint 32 to ulong
+        /// </summary>
+        private static ulong MultiplyUInt32(uint a, uint b)
+        {
+            return (ulong)a * (ulong)b;
+        }
+
+        /// <summary>
+        /// Multiply two ulong and takes upper 64 bits
+        /// Formula = (a * b) = ((aUpper + aLower) * (bUpper + bLower)) =
+        /// ((aUpper * bUpper) + (aUpper * bLower) + (aLower * bUpper) + (aLower * bLower)).
+        /// https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
+        /// </summary>
+        private static ulong MultiplyUInt64(ulong a, ulong b)
+        {
+            uint aUpper = (uint)(a >> 32);
+            uint aLower = (uint)a;
+            
+            uint bUpper = (uint)(b >> 32);
+            uint bLower = (uint)b;
+
+            ulong hi = MultiplyUInt32(aUpper, bUpper);
+            ulong mid1 = MultiplyUInt32(aUpper, bLower);
+            ulong mid2 = MultiplyUInt32(aLower, bUpper);
+            
+            // round the result: should be enough to just add constant 5
+            // because we will shift down the result, exact lower bits wouldn't matter
+            return hi + (mid1 >> 32) + (mid2 >> 32) + 5;
+
+            // ulong lo = MultiplyUInt32(aLower, bLower);
+            // ulong carry = ((ulong)(uint)mid1 + (ulong)(uint)mid2 + (lo >> 32)) >> 32;
+            // return hi + (mid1 >> 32) + (mid2 >> 32) + carry;
+        }
+
         private static decimal ToDecimalNormalized(long value, byte scale = Precision)
         {
             bool isNegative = value < 0;
@@ -127,12 +169,12 @@ namespace Cathei.Mathematics
             if (isNegative)
                 value = -value;
 
-            int lower = (int)(value & 0xFFFF_FFFF);
-            int upper = (int)((value >> 32) & 0x7FFF_FFFF);
+            int lower = (int)value;
+            int upper = (int)(value >> 32);
 
             return new decimal(lower, upper, 0, isNegative, scale);
         }
-        
+
         private readonly struct AlreadyNormalized { }
 
         #endregion

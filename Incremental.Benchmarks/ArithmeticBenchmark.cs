@@ -7,7 +7,7 @@ using BreakInfinity;
 namespace Cathei.Mathematics.Benchmarks;
 
 // [DryJob]
-// [ShortRunJob]
+[ShortRunJob]
 public class ArithmeticBenchmark
 {
     private readonly double doubleA;

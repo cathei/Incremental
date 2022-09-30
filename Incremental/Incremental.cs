@@ -109,18 +109,39 @@ namespace Cathei.Mathematics
             // rule out zero first
             if (a.Mantissa == 0 || b.Mantissa == 0)
                 return Zero;
-            
-            // calculate in decimal
-            var mantissa = (long)(ToDecimalNormalized(a.Mantissa) * b.Mantissa);
-            var exponent = a.Exponent + b.Exponent;
 
-            if (mantissa >= Unit * 10 || mantissa <= -Unit * 10)
+            bool aNegative = a.Mantissa < 0;
+            bool bNegative = b.Mantissa < 0;
+
+            // since we use only 57 bits of 64 as mantissa we shift the bits for calculation
+            // first we generate value of A / Unit
+            // this point InverseUnitShift53 is shifted left by 53 + 64
+            // we can safely shift A 7 bits for more precise result
+            ulong result = MultiplyUInt64(
+                (ulong)(aNegative ? -a.Mantissa : a.Mantissa) << 7,
+                InverseUnitShift53);
+            
+            // We takes upper 64 bit, result is shifted left by 53 + 7
+            // now safely shift B as well and multiply with result, take upper 64 bit
+            result = MultiplyUInt64(
+                (ulong)(bNegative ? -b.Mantissa : b.Mantissa) << 7,
+                result);
+            
+            // Now the result is shifted left by 3
+            long mantissa = (long)(result >> 3);
+            long exponent = a.Exponent + b.Exponent;
+
+            if (mantissa >= Unit * 10)
             {
                 // in this case mantissa abs is between [Unit * 10, Unit * 100)
                 mantissa /= 10;
                 exponent++;
             }
-            
+
+            // apply sign
+            if (aNegative ^ bNegative)
+                mantissa = -mantissa;
+
             return new Incremental(mantissa, exponent, new AlreadyNormalized());
         }
 
