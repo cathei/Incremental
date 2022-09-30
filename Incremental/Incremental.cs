@@ -121,14 +121,16 @@ namespace Cathei.Mathematics
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa) << 7,
                 InverseUnitShift53);
             
-            // We takes upper 64 bit, result is shifted left by 53 + 7
+            // we takes upper 64 bit, result is shifted left by 53 + 7
             // now safely shift B as well and multiply with result, take upper 64 bit
             result = MultiplyUInt64(
                 (ulong)(bNegative ? -b.Mantissa : b.Mantissa) << 7,
                 result);
             
-            // Now the result is shifted left by 3
-            long mantissa = (long)(result >> 3);
+            // now the result is shifted left by 3
+            // round the result first: should be enough to just add constant 4 (0b100), to round from third bit
+            // because we will shift down the result, exact lower bits wouldn't matter (not significant)
+            long mantissa = (long)((result + 4) >> 3);
             long exponent = a.Exponent + b.Exponent;
 
             if (mantissa >= Unit * 10)

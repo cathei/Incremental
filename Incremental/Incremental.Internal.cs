@@ -153,9 +153,9 @@ namespace Cathei.Mathematics
             ulong mid1 = MultiplyUInt32(aUpper, bLower);
             ulong mid2 = MultiplyUInt32(aLower, bUpper);
             
-            // round the result: should be enough to just add constant 5
-            // because we will shift down the result, exact lower bits wouldn't matter
-            return hi + (mid1 >> 32) + (mid2 >> 32) + 5;
+            // we could calculate carry bits
+            // but Incremental have some unused bits as padding, so should be fine
+            return hi + (mid1 >> 32) + (mid2 >> 32);
 
             // ulong lo = MultiplyUInt32(aLower, bLower);
             // ulong carry = ((ulong)(uint)mid1 + (ulong)(uint)mid2 + (lo >> 32)) >> 32;
