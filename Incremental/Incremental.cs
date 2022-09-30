@@ -111,7 +111,7 @@ namespace Cathei.Mathematics
                 return Zero;
             
             // calculate in decimal
-            var mantissa = ToDecimalNormalized(a.Mantissa) * b.Mantissa;
+            var mantissa = (long)(ToDecimalNormalized(a.Mantissa) * b.Mantissa);
             var exponent = a.Exponent + b.Exponent;
 
             if (mantissa >= Unit * 10 || mantissa <= -Unit * 10)
@@ -134,7 +134,7 @@ namespace Cathei.Mathematics
                 return Zero;
 
             // calculate in decimal
-            var mantissa = a.Mantissa / ToDecimalNormalized(b.Mantissa);
+            var mantissa = (long)(a.Mantissa / ToDecimalNormalized(b.Mantissa));
             var exponent = a.Exponent - b.Exponent;
             
             if (mantissa < Unit && mantissa > -Unit)
