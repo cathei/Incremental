@@ -6,6 +6,7 @@ using BreakInfinity;
 
 namespace Cathei.Mathematics.Benchmarks;
 
+// [DryJob]
 [ShortRunJob]
 public class ArithmeticBenchmark
 {
@@ -25,8 +26,8 @@ public class ArithmeticBenchmark
 
     public ArithmeticBenchmark()
     {
-        doubleA = Rng.NextDouble() * 200000 - 10000;
-        doubleB = Rng.NextDouble() * 200000 - 10000;
+        doubleA = Rng.NextDouble() * 200000 - 100000;
+        doubleB = Rng.NextDouble() * 200000 - 100000;
 
         decimalA = (decimal)doubleA;
         decimalB = (decimal)doubleB;

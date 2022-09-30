@@ -70,6 +70,13 @@ namespace Cathei.Mathematics
             Mantissa = mantissa;
             Exponent = exponent;
         }
+        
+        // Private constructor for the case we already know it's normalized
+        private Incremental(long mantissa, long exponent, AlreadyNormalized _)
+        {
+            Mantissa = mantissa;
+            Exponent = exponent;
+        }
 
         #region Arithmetic operations
 
@@ -120,7 +127,7 @@ namespace Cathei.Mathematics
 
         public static Incremental Negate(in Incremental value)
         {
-            return new Incremental(-value.Mantissa, value.Exponent);
+            return new Incremental(-value.Mantissa, value.Exponent, new AlreadyNormalized());
         }
 
         public static Incremental operator +(in Incremental value) => value;
@@ -248,11 +255,13 @@ namespace Cathei.Mathematics
             if (double.IsNaN(value))
                 throw new ArgumentException("NaN is not supported", nameof(value));
 
-            bool isNegative = value < 0;
-            value = isNegative ? -value : value;
-
             if (value == 0)
                 return Zero;
+
+            bool isNegative = value < 0;
+
+            if (isNegative)
+                value = -value;
 
             long exponent = (long)Math.Log10(value);
             long mantissa = (long)(value * Math.Pow(10, Precision - exponent));
@@ -299,12 +308,11 @@ namespace Cathei.Mathematics
         /// </summary>
         public static Incremental Max(in Incremental a, in Incremental b) => a > b ? a : b;
 
-
         /// <summary>
         /// Returns absolute value.
         /// </summary>
         public static Incremental Abs(in Incremental value)
-            => new Incremental(Math.Abs(value.Mantissa), value.Exponent);
+            => new Incremental(Math.Abs(value.Mantissa), value.Exponent, new AlreadyNormalized());
 
         // /// <summary>
         // /// Returns Log10 value. (undefined when value is not positive)
@@ -317,7 +325,8 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Returns power of 10.
         /// </summary>
-        public static Incremental Pow10(long power) => new Incremental(Unit, power);
+        public static Incremental Pow10(long power)
+            => new Incremental(Unit, power, new AlreadyNormalized());
 
         /// <summary>
         /// Truncate the value. If exponent is specified, the digit of 1E+exponent will be least significant.

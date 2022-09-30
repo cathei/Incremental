@@ -19,7 +19,6 @@ namespace Cathei.Mathematics
         /// Lookup table for power of 10s.
         /// </summary>
         private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range + 1];
-        private static readonly Func<long, long>[] MultiplyPow10Table = new Func<long, long>[MaxPowersOf10Range * 2 + 1];
 
         static Incremental()
         {
@@ -30,49 +29,56 @@ namespace Cathei.Mathematics
                 PowersOf10[i] = value;
                 value *= 10;
             }
-            
-            MultiplyPow10Table[MaxPowersOf10Range + 0] = x => x;
-            MultiplyPow10Table[MaxPowersOf10Range + 1] = x => x * 10;
-            MultiplyPow10Table[MaxPowersOf10Range + 2] = x => x * 100;
-            MultiplyPow10Table[MaxPowersOf10Range + 3] = x => x * 1_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 4] = x => x * 10_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 5] = x => x * 100_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 6] = x => x * 1_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 7] = x => x * 10_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 8] = x => x * 100_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 9] = x => x * 1_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 10] = x => x * 10_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 11] = x => x * 100_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 12] = x => x * 1_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 13] = x => x * 10_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 14] = x => x * 100_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 15] = x => x * 1_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 16] = x => x * 10_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 17] = x => x * 100_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + 18] = x => x * 1_000_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -1] = x => x / 10;
-            MultiplyPow10Table[MaxPowersOf10Range + -2] = x => x / 100;
-            MultiplyPow10Table[MaxPowersOf10Range + -3] = x => x / 1_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -4] = x => x / 10_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -5] = x => x / 100_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -6] = x => x / 1_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -7] = x => x / 10_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -8] = x => x / 100_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -9] = x => x / 1_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -10] = x => x / 10_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -11] = x => x / 100_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -12] = x => x / 1_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -13] = x => x / 10_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -14] = x => x / 100_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -15] = x => x / 1_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -16] = x => x / 10_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -17] = x => x / 100_000_000_000_000_000;
-            MultiplyPow10Table[MaxPowersOf10Range + -18] = x => x / 1_000_000_000_000_000_000;
         }
 
+        /// <summary>
+        /// Fast multiply or divide by pow 10.
+        /// The constant division will be optimized by compiler.
+        /// </summary>
         private static long MultiplyPow10(long value, long pow)
         {
-            return MultiplyPow10Table[MaxPowersOf10Range + pow](value);
+            switch (pow)
+            {
+                case 0: return value;
+                case 1: return value * 10;
+                case 2: return value * 100;
+                case 3: return value * 1_000;
+                case 4: return value * 10_000;
+                case 5: return value * 100_000;
+                case 6: return value * 1_000_000;
+                case 7: return value * 10_000_000;
+                case 8: return value * 100_000_000;
+                case 9: return value * 1_000_000_000;
+                case 10: return value * 10_000_000_000;
+                case 11: return value * 100_000_000_000;
+                case 12: return value * 1_000_000_000_000;
+                case 13: return value * 10_000_000_000_000;
+                case 14: return value * 100_000_000_000_000;
+                case 15: return value * 1_000_000_000_000_000;
+                case 16: return value * 10_000_000_000_000_000;
+                case 17: return value * 100_000_000_000_000_000;
+                case 18: return value * 1_000_000_000_000_000_000;
+                case -1: return value / 10;
+                case -2: return value / 100;
+                case -3: return value / 1_000;
+                case -4: return value / 10_000;
+                case -5: return value / 100_000;
+                case -6: return value / 1_000_000;
+                case -7: return value / 10_000_000;
+                case -8: return value / 100_000_000;
+                case -9: return value / 1_000_000_000;
+                case -10: return value / 10_000_000_000;
+                case -11: return value / 100_000_000_000;
+                case -12: return value / 1_000_000_000_000;
+                case -13: return value / 10_000_000_000_000;
+                case -14: return value / 100_000_000_000_000;
+                case -15: return value / 1_000_000_000_000_000;
+                case -16: return value / 10_000_000_000_000_000;
+                case -17: return value / 100_000_000_000_000_000;
+                case -18: return value / 1_000_000_000_000_000_000;
+            }
+
+            throw new OverflowException();
         }
 
         /// <summary>
@@ -81,33 +87,53 @@ namespace Cathei.Mathematics
         private static int Log10Int(long value)
         {
             int result = 0;
-            int eval = 16;
 
-            while (eval > 0)
+            if (value >= 1_0000_0000_0000_0000L)
             {
-                if (value >= PowersOf10[eval])
+                result += 16;
+                value /= 1_0000_0000_0000_0000L;
+            }
+            else // maximum log 10 for long type is 18 
+            {
+                if (value >= 1_0000_0000L)
                 {
-                    result += eval;
-                    value = MultiplyPow10(value, -eval);
+                    result += 8;
+                    value /= 1_0000_0000L;
                 }
 
-                eval /= 2;
+                if (value >= 10000)
+                {
+                    result += 4;
+                    value /= 10000;
+                }
             }
 
+            if (value >= 100)
+            {
+                result += 2;
+                value /= 100;
+            }
+
+            if (value >= 10)
+                result += 1;
+            
             return result;
         }
 
         private static decimal ToDecimalNormalized(long value, byte scale = Precision)
         {
             bool isNegative = value < 0;
-            value = isNegative ? -value : value;
+
+            if (isNegative)
+                value = -value;
 
             int lower = (int)(value & 0xFFFF_FFFF);
             int upper = (int)((value >> 32) & 0x7FFF_FFFF);
 
             return new decimal(lower, upper, 0, isNegative, scale);
         }
-
+        
+        private readonly struct AlreadyNormalized { }
 
         #endregion
     }
