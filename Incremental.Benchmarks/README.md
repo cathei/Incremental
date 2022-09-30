@@ -21,3 +21,22 @@ Current snapshot of the benchmark to compare later versions
 | IncrementalDiv | 109.7989 ns | 0.5041 ns | 0.4209 ns | 109.7557 ns |
 |   BigDoubleDiv |  30.5874 ns | 0.3522 ns | 0.3122 ns |  30.6722 ns |
 
+|         Method |       Mean |      Error |    StdDev |     Median |
+|--------------- |-----------:|-----------:|----------:|-----------:|
+|      DoubleAdd |  0.0052 ns |  0.1633 ns | 0.0090 ns |  0.0000 ns |
+|     DecimalAdd |  7.4990 ns |  1.2137 ns | 0.0665 ns |  7.5231 ns |
+| IncrementalAdd | 12.3195 ns |  0.2404 ns | 0.0132 ns | 12.3239 ns |
+|   BigDoubleAdd | 18.4258 ns |  2.1335 ns | 0.1169 ns | 18.4114 ns |
+|      DoubleSub |  0.0032 ns |  0.0649 ns | 0.0036 ns |  0.0025 ns |
+|     DecimalSub |  7.4831 ns |  0.7438 ns | 0.0408 ns |  7.5064 ns |
+| IncrementalSub |  6.8720 ns |  0.8898 ns | 0.0488 ns |  6.8655 ns |
+|   BigDoubleSub | 18.4282 ns |  5.0289 ns | 0.2756 ns | 18.4022 ns |
+|      DoubleMul |  0.0124 ns |  0.2640 ns | 0.0145 ns |  0.0090 ns |
+|     DecimalMul | 11.9808 ns |  1.1787 ns | 0.0646 ns | 11.9676 ns |
+| IncrementalMul | 46.2155 ns |  6.3903 ns | 0.3503 ns | 46.3346 ns |
+|   BigDoubleMul | 12.3167 ns |  0.8004 ns | 0.0439 ns | 12.3309 ns |
+|      DoubleDiv |  0.0193 ns |  0.3021 ns | 0.0166 ns |  0.0269 ns |
+|     DecimalDiv | 58.0784 ns |  3.1519 ns | 0.1728 ns | 58.0736 ns |
+| IncrementalDiv | 87.9172 ns | 54.1510 ns | 2.9682 ns | 86.3076 ns |
+|   BigDoubleDiv | 30.7582 ns |  9.8533 ns | 0.5401 ns | 30.5377 ns |
+

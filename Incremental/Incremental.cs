@@ -106,11 +106,22 @@ namespace Cathei.Mathematics
 
         public static Incremental Multiply(in Incremental a, in Incremental b)
         {
+            // rule out zero first
+            if (a.Mantissa == 0 || b.Mantissa == 0)
+                return Zero;
+            
             // calculate in decimal
             var mantissa = ToDecimalNormalized(a.Mantissa) * b.Mantissa;
             var exponent = a.Exponent + b.Exponent;
 
-            return new Incremental((long)mantissa, exponent);
+            if (mantissa >= Unit * 10 || mantissa <= -Unit * 10)
+            {
+                // in this case mantissa abs is between [Unit * 10, Unit * 100)
+                mantissa /= 10;
+                exponent++;
+            }
+            
+            return new Incremental(mantissa, exponent, new AlreadyNormalized());
         }
 
         public static Incremental Divide(in Incremental a, in Incremental b)
@@ -118,11 +129,22 @@ namespace Cathei.Mathematics
             if (b.Mantissa == 0)
                 throw new DivideByZeroException();
 
+            // rule out zero first
+            if (a.Mantissa == 0)
+                return Zero;
+
             // calculate in decimal
             var mantissa = a.Mantissa / ToDecimalNormalized(b.Mantissa);
             var exponent = a.Exponent - b.Exponent;
+            
+            if (mantissa < Unit && mantissa > -Unit)
+            {
+                // in this case mantissa abs is between [Unit / 10, Unit)
+                mantissa *= 10;
+                exponent--;
+            }
 
-            return new Incremental((long)mantissa, exponent);
+            return new Incremental(mantissa, exponent, new AlreadyNormalized());
         }
 
         public static Incremental Negate(in Incremental value)
