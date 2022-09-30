@@ -162,7 +162,7 @@ namespace Cathei.Mathematics
             bool aNegative = a.Mantissa < 0;
             bool bNegative = b.Mantissa < 0;
 
-            long mantissa = (long)DivideUInt64(
+            long mantissa = DivideUInt64(
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa),
                 (ulong)(bNegative ? -b.Mantissa : b.Mantissa));
             

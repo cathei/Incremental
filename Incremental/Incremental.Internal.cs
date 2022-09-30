@@ -166,44 +166,24 @@ namespace Cathei.Mathematics
         /// Divide two normalized ulong and returns result mantissa.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
-        private static ulong DivideUInt64(ulong a, ulong b)
+        private static long DivideUInt64(ulong a, ulong b)
         {
-            ulong result = 0;
-            
-            for (int i = 1; i <= 9; ++i)
+            long result = 0;
+            long exponent = Precision;
+
+            while (a > 0 && exponent > 0)
             {
-                // we have 7 bits buffer we can operate
-                a <<= 7;
-            
-                // integer div and rem should be covered in same operation on CPU
+                a *= 100;
+                exponent -= 2;
+                
+                // mul and rem would be single operation in CPU
                 ulong q = a / b;
                 a %= b;
-
-                q *= Unit;
-                result += q >> (i * 7);
-
-                if (a == 0)
-                    break;
-
-
-
-
-                // q *= Unit;
-                //
-                // result += (q * Unit) >> (i * 7);
-                // if (a == 0)
-                //     return (result << (i * 7)) >> 6;
-
-                // next loop
-                // result += q;
-                // result <<= 7;
+                
+                result += MultiplyPow10((long)q, exponent);
             }
 
-            // 7 * 9 = 63 and we only need 57 bits
-            // add constant 32 (0b100000), to round from sixth bit
-            // result = (result + 32) >> 6;
-
-            return result; // * Unit;
+            return result;
         }
 
         private static decimal ToDecimalNormalized(long value, byte scale = Precision)
