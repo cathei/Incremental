@@ -6,85 +6,100 @@ using BreakInfinity;
 
 namespace Cathei.Mathematics.Benchmarks;
 
-// [DryJob]
 [ShortRunJob]
 public class ArithmeticBenchmark
 {
-    private readonly double doubleA;
-    private readonly double doubleB;
-
-    private readonly decimal decimalA;
-    private readonly decimal decimalB;
-
-    private readonly Incremental incrementalA;
-    private readonly Incremental incrementalB;
-
-    private readonly BigDouble bigDoubleA;
-    private readonly BigDouble bigDoubleB;
-
-    private static readonly Random Rng = new Random();
-
-    public ArithmeticBenchmark()
+    public IEnumerable<object[]> DoubleArguments()
     {
-        doubleA = Rng.NextDouble() * 2000000 - 1000000;
-        doubleB = Rng.NextDouble() * 2000000 - 1000000;
-
-        decimalA = (decimal)doubleA;
-        decimalB = (decimal)doubleB;
-
-        incrementalA = (Incremental)doubleA;
-        incrementalB = (Incremental)doubleB;
-
-        bigDoubleA = doubleA;
-        bigDoubleB = doubleB;
+        yield return new object[] { 0.0, 1.0 };
+        yield return new object[] { 3.141592e+10, 2.45290e+8 };
+        yield return new object[] { 0.00015, 0.000000001325 };
+        yield return new object[] { 90.12308590830902345, 72.3499590238902103 };
     }
 
+    public IEnumerable<object[]> DecimalArguments()
+        => DoubleArguments().Select(x => x.Select(v => (object)(decimal)(double)v).ToArray());
+
+    public IEnumerable<object[]> IncrementalArguments()
+        => DoubleArguments().Select(x => x.Select(v => (object)(Incremental)(double)v).ToArray());
+
+    public IEnumerable<object[]> BigDoubleArguments()
+        => DoubleArguments().Select(x => x.Select(v => (object)(BigDouble)(double)v).ToArray());
+}
+
+public class AdditionBenchmark : ArithmeticBenchmark
+{
     [Benchmark]
-    public double DoubleAdd() => doubleA + doubleB;
+    [ArgumentsSource(nameof(DoubleArguments))]
+    public double DoubleAdd(double doubleA, double doubleB) => doubleA + doubleB;
+
+    [Benchmark(Baseline = true)]
+    [ArgumentsSource(nameof(DecimalArguments))]
+    public decimal DecimalAdd(decimal decimalA, decimal decimalB) => decimalA + decimalB;
 
     [Benchmark]
-    public decimal DecimalAdd() => decimalA + decimalB;
+    [ArgumentsSource(nameof(IncrementalArguments))]
+    public Incremental IncrementalAdd(Incremental incrementalA, Incremental incrementalB) => incrementalA + incrementalB;
 
     [Benchmark]
-    public Incremental IncrementalAdd() => incrementalA + incrementalB;
+    [ArgumentsSource(nameof(BigDoubleArguments))]
+    public BigDouble BigDoubleAdd(BigDouble bigDoubleA, BigDouble bigDoubleB) => bigDoubleA + bigDoubleB;
+}
+
+public class SubtractionBenchmark : ArithmeticBenchmark
+{
+    [Benchmark]
+    [ArgumentsSource(nameof(DoubleArguments))]
+    public double DoubleSub(double doubleA, double doubleB) => doubleA - doubleB;
+
+    [Benchmark(Baseline = true)]
+    [ArgumentsSource(nameof(DecimalArguments))]
+    public decimal DecimalSub(decimal decimalA, decimal decimalB) => decimalA - decimalB;
 
     [Benchmark]
-    public BigDouble BigDoubleAdd() => bigDoubleA + bigDoubleB;
-    
-    [Benchmark]
-    public double DoubleSub() => doubleA - doubleB;
+    [ArgumentsSource(nameof(IncrementalArguments))]
+    public Incremental IncrementalSub(Incremental incrementalA, Incremental incrementalB) => incrementalA - incrementalB;
 
     [Benchmark]
-    public decimal DecimalSub() => decimalA - decimalB;
+    [ArgumentsSource(nameof(BigDoubleArguments))]
+    public BigDouble BigDoubleSub(BigDouble bigDoubleA, BigDouble bigDoubleB) => bigDoubleA - bigDoubleB;
+}
+
+public class MultiplicationBenchmark : ArithmeticBenchmark
+{
+    [Benchmark]
+    [ArgumentsSource(nameof(DoubleArguments))]
+    public double DoubleMul(double doubleA, double doubleB) => doubleA * doubleB;
+
+    [Benchmark(Baseline = true)]
+    [ArgumentsSource(nameof(DecimalArguments))]
+    public decimal DecimalMul(decimal decimalA, decimal decimalB) => decimalA * decimalB;
 
     [Benchmark]
-    public Incremental IncrementalSub() => incrementalA - incrementalB;
+    [ArgumentsSource(nameof(IncrementalArguments))]
+    public Incremental IncrementalMul(Incremental incrementalA, Incremental incrementalB) => incrementalA * incrementalB;
 
     [Benchmark]
-    public BigDouble BigDoubleSub() => bigDoubleA - bigDoubleB;
+    [ArgumentsSource(nameof(BigDoubleArguments))]
+    public BigDouble BigDoubleMul(BigDouble bigDoubleA, BigDouble bigDoubleB) => bigDoubleA * bigDoubleB;
+}
+
+public class DivisionBenchmark : ArithmeticBenchmark
+{
+    [Benchmark]
+    [ArgumentsSource(nameof(DoubleArguments))]
+    public double DoubleDiv(double doubleA, double doubleB) => doubleA / doubleB;
+
+    [Benchmark(Baseline = true)]
+    [ArgumentsSource(nameof(DecimalArguments))]
+    public decimal DecimalDiv(decimal decimalA, decimal decimalB) => decimalA / decimalB;
 
     [Benchmark]
-    public double DoubleMul() => doubleA * doubleB;
+    [ArgumentsSource(nameof(IncrementalArguments))]
+    public Incremental IncrementalDiv(Incremental incrementalA, Incremental incrementalB) => incrementalA / incrementalB;
 
     [Benchmark]
-    public decimal DecimalMul() => decimalA * decimalB;
-
-    [Benchmark]
-    public Incremental IncrementalMul() => incrementalA * incrementalB;
-
-    [Benchmark]
-    public BigDouble BigDoubleMul() => bigDoubleA * bigDoubleB;
-
-    [Benchmark]
-    public double DoubleDiv() => doubleA / doubleB;
-
-    [Benchmark]
-    public decimal DecimalDiv() => decimalA / decimalB;
-
-    [Benchmark]
-    public Incremental IncrementalDiv() => incrementalA / incrementalB;
-
-    [Benchmark]
-    public BigDouble BigDoubleDiv() => bigDoubleA / bigDoubleB;
+    [ArgumentsSource(nameof(BigDoubleArguments))]
+    public BigDouble BigDoubleDiv(BigDouble bigDoubleA, BigDouble bigDoubleB) => bigDoubleA / bigDoubleB;
 }
 
