@@ -156,19 +156,6 @@ namespace Cathei.Mathematics
             if (a.Mantissa == 0)
                 return Zero;
 
-            // calculate in decimal
-            // var mantissa = (long)(a.Mantissa / ToDecimalNormalized(b.Mantissa))
-            
-
-            if (true)
-            {
-                return Abs(a) * NewtonRaphsonReciprocal(new Incremental(b.Mantissa, 0), 50);
-            }
-            
-            
-            
-            
-            
             bool aNegative = a.Mantissa < 0;
             bool bNegative = b.Mantissa < 0;
 

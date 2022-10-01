@@ -161,54 +161,143 @@ namespace Cathei.Mathematics
             // ulong carry = ((ulong)(uint)mid1 + (ulong)(uint)mid2 + (lo >> 32)) >> 32;
             // return hi + (mid1 >> 32) + (mid2 >> 32) + carry;
         }
+        
+        // /// <summary>
+        // /// Full multiply two ulong and takes upper 128 bits
+        // /// Formula = (a * b) = ((aUpper + aLower) * (bUpper + bLower)) =
+        // /// ((aUpper * bUpper) + (aUpper * bLower) + (aLower * bUpper) + (aLower * bLower)).
+        // /// https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
+        // /// </summary>
+        // private static (ulong hi, ulong lo) MultiplyUInt128(ulong a, ulong b)
+        // {
+        //     uint aUpper = (uint)(a >> 32);
+        //     uint aLower = (uint)a;
+        //     
+        //     uint bUpper = (uint)(b >> 32);
+        //     uint bLower = (uint)b;
+        //
+        //     ulong hi = MultiplyUInt32(aUpper, bUpper);
+        //     ulong mid1 = MultiplyUInt32(aUpper, bLower);
+        //     ulong mid2 = MultiplyUInt32(aLower, bUpper);
+        //     ulong lo = MultiplyUInt32(aLower, bLower);
+        //     
+        //     ulong carry = ((ulong)(uint)mid1 + (ulong)(uint)mid2 + (lo >> 32)) >> 32;
+        //
+        //     lo += (mid1 << 32) + (mid2 << 32);
+        //     hi += (mid1 >> 32) + (mid2 >> 32) + carry;
+        //
+        //     return (hi, lo);
+        // }
+        //
+        // private static void Divide128(out (ulong upper, ulong lower) quotient, ref (ulong upper, ulong lower) value, UInt64 divider)
+        // {
+        //     quotient.upper = quotient.lower = 0;
+        //     // var dneg = GetBitLength((UInt32)(divider >> 32));
+        //     // var d = 32 - dneg;
+        //     var vPrime = divider << d;
+        //     var v1 = (UInt32)(vPrime >> 32);
+        //     var v2 = (UInt32)vPrime;
+        //     var r0 = value.r0;
+        //     var r1 = value.r1;
+        //     var r2 = value.r2;
+        //     var r3 = value.r3;
+        //     var r4 = (UInt32)0;
+        //     // if (d != 0)
+        //     // {
+        //     //     r4 = r3 >> dneg;
+        //     //     r3 = r3 << d | r2 >> dneg;
+        //     //     r2 = r2 << d | r1 >> dneg;
+        //     //     r1 = r1 << d | r0 >> dneg;
+        //     //     r0 <<= d;
+        //     // }
+        //     quotient.lower = DivRem(r4, ref r3, ref r2, v1, v2);
+        //     var q1 = DivRem(r3, ref r2, ref r1, v1, v2);
+        //     var q0 = DivRem(r2, ref r1, ref r0, v1, v2);
+        //     quotient.upper = (UInt64)q1 << 32 | q0;
+        //     Debug.Assert((BigInteger)quotient == (BigInteger)value / divider);
+        // }
 
-
+        
         /// <summary>
-        /// Newton-Raphson method to find reciprocal.
-        /// X[N+1] = X[N] * (2 - b * X[N])
+        /// For normalized ulong, there is only 4 case
         /// </summary>
-        private static Incremental NewtonRaphsonReciprocal(Incremental value, int iteration)
+        private static short GetLeadingBitShiftLeft(ulong value)
         {
-            // const ulong numberTwo = Unit * 2;
-            // const ulong initialGuess = 0xF000_0000_0000_0000; // 0.5 << 64
-            // const int iteration = 5;
-
-            Incremental two = One * 2;
-            Incremental guess = new Incremental(Unit * 5, -1);;
-
-            for (int i = 0; i < iteration; ++i)
+            if (value >= 0x0080_0000_0000_0000)
             {
-                Incremental eval = two - (value * guess);
-                
-                // mantissa is still shifted by 1 bits (relative to decimal point) so compensate that
-                // guess = MultiplyUInt64(eval << 1, guess);
-                guess *= eval;
+                if (value >= 0x0100_0000_0000_0000)
+                    return 56;
+                else
+                    return 55;
             }
-
-            return guess;
+            else
+            {
+                if (value >= 0x0040_0000_0000_0000)
+                    return 54;
+                else
+                    return 53;
+            }
         }
-
+        
         /// <summary>
         /// Divide two normalized ulong and returns result mantissa.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
-        private static long DivideUInt64(ulong a, ulong b)
+        private static ulong DivideUInt64(ulong a, ulong b)
         {
-            // return MultiplyUInt64(a, NewtonRaphsonReciprocal(b));
-            
-            long result = 0;
-            long exponent = Precision;
+            // int shiftA = GetLeadingBitShiftLeft(a);
+            // int shiftB = GetLeadingBitShiftLeft(b);
+            //
+            // int shift;
+            //
+            // // alignment
+            // if (shiftA < shiftB)
+            // {
+            //     a <<= shiftB - shiftA;
+            //     shift = shiftB;
+            // }
+            // else
+            // {
+            //     b <<= shiftA - shiftB;
+            //     shift = shiftA;
+            // }
+            //
+            // ulong result = 0;
+            //
+            // while (shift > 0)
+            // {
+            //     if (a < b)
+            //     {
+            //         shift--;
+            //         continue;
+            //     }
+            //
+            //     a -= b;
+            //     result |= (1u << shift);
+            //
+            //     if (a == 0)
+            //         break;
+            //
+            //     a <<= 1;
+            //     shift--;
+            // }
+            //
+            // return result;
+
+
+            ulong result = 0;
+            int exponent = Precision;
             
             while (a > 0 && exponent > 0)
             {
                 a *= 100;
                 exponent -= 2;
-                
+
                 // mul and rem would be single operation in CPU
                 ulong q = a / b;
                 a %= b;
                 
-                result += MultiplyPow10((long)q, exponent);
+                result += q * (ulong)PowersOf10[exponent];
             }
             
             return result;
@@ -228,7 +317,7 @@ namespace Cathei.Mathematics
         }
 
         private readonly struct AlreadyNormalized { }
-
+        
         #endregion
     }
 }
