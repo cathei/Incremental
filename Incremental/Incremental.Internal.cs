@@ -182,13 +182,17 @@ namespace Cathei.Mathematics
 
         /// <summary>
         /// Divide two normalized ulong and returns result mantissa.
+        /// This method produces value that has one less exponent of [Unit, Unit * 100) range.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
         private static ulong DivideUInt64(ulong a, ulong b)
         {
             ulong result = 0;
 
-            int exponent = Precision;
+            // produce one more digit so mantissa would be shifted
+            int exponent = Precision + 1;
+
+            // it is safe to multiply 100 at first loop
             int diff = 2;
 
             // truncate divisor first

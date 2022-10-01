@@ -35,12 +35,12 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Value of number 0.
         /// </summary>
-        public static readonly Incremental Zero = new Incremental(0, 0);
+        public static readonly Incremental Zero = new Incremental(0, 0, new AlreadyNormalized());
 
         /// <summary>
         /// Value of number 1.
         /// </summary>
-        public static readonly Incremental One = new Incremental(Unit, 0);
+        public static readonly Incremental One = new Incremental(Unit, 0, new AlreadyNormalized());
 
         /// <summary>
         /// Construct Incremental value manually. The value will be normalized.
@@ -163,13 +163,13 @@ namespace Cathei.Mathematics
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa),
                 (ulong)(bNegative ? -b.Mantissa : b.Mantissa));
 
-            long exponent = a.Exponent - b.Exponent;
+            long exponent = a.Exponent - b.Exponent - 1;
 
-            if (mantissa < Unit)
+            if (mantissa >= Unit * 10)
             {
-                // in this case mantissa abs is between [Unit / 10, Unit)
-                mantissa *= 10;
-                exponent--;
+                // in this case mantissa abs is between [Unit * 10, Unit * 100)
+                mantissa /= 10;
+                exponent++;
             }
 
             // apply sign
@@ -401,7 +401,9 @@ namespace Cathei.Mathematics
             mantissa = MultiplyPow10(mantissa, -(int)exponentDiff);
             mantissa = MultiplyPow10(mantissa, (int)exponentDiff);
 
-            return new Incremental(mantissa, value.Exponent);
+            return new Incremental(mantissa, value.Exponent, new AlreadyNormalized());
+        }
+
         }
 
         #endregion
