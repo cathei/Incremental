@@ -162,15 +162,43 @@ namespace Cathei.Mathematics
             // return hi + (mid1 >> 32) + (mid2 >> 32) + carry;
         }
 
+
+        /// <summary>
+        /// Newton-Raphson method to find reciprocal.
+        /// X[N+1] = X[N] * (2 - b * X[N])
+        /// </summary>
+        private static Incremental NewtonRaphsonReciprocal(Incremental value, int iteration)
+        {
+            // const ulong numberTwo = Unit * 2;
+            // const ulong initialGuess = 0xF000_0000_0000_0000; // 0.5 << 64
+            // const int iteration = 5;
+
+            Incremental two = One * 2;
+            Incremental guess = new Incremental(Unit * 5, -1);;
+
+            for (int i = 0; i < iteration; ++i)
+            {
+                Incremental eval = two - (value * guess);
+                
+                // mantissa is still shifted by 1 bits (relative to decimal point) so compensate that
+                // guess = MultiplyUInt64(eval << 1, guess);
+                guess *= eval;
+            }
+
+            return guess;
+        }
+
         /// <summary>
         /// Divide two normalized ulong and returns result mantissa.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
         private static long DivideUInt64(ulong a, ulong b)
         {
+            // return MultiplyUInt64(a, NewtonRaphsonReciprocal(b));
+            
             long result = 0;
             long exponent = Precision;
-
+            
             while (a > 0 && exponent > 0)
             {
                 a *= 100;
@@ -182,7 +210,7 @@ namespace Cathei.Mathematics
                 
                 result += MultiplyPow10((long)q, exponent);
             }
-
+            
             return result;
         }
 

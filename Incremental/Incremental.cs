@@ -157,12 +157,22 @@ namespace Cathei.Mathematics
                 return Zero;
 
             // calculate in decimal
-            // var mantissa = (long)(a.Mantissa / ToDecimalNormalized(b.Mantissa));
+            // var mantissa = (long)(a.Mantissa / ToDecimalNormalized(b.Mantissa))
+            
+
+            if (true)
+            {
+                return Abs(a) * NewtonRaphsonReciprocal(new Incremental(b.Mantissa, 0), 50);
+            }
+            
+            
+            
+            
             
             bool aNegative = a.Mantissa < 0;
             bool bNegative = b.Mantissa < 0;
 
-            long mantissa = DivideUInt64(
+            long mantissa = (long)DivideUInt64(
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa),
                 (ulong)(bNegative ? -b.Mantissa : b.Mantissa));
             
