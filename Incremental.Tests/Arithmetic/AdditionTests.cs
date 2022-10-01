@@ -25,6 +25,20 @@ public class AdditionTests
         new Incremental[] { new(Unit, 99), new(Unit, 0), new(Unit, 99) },
         new Incremental[] { new(10_000_000_000_000_001, 0), 0, new(10_000_000_000_000_001, 0) },
 
+        new Incremental[]
+        {
+            new(90_000_000_000_000_001, 0),
+            new(1, 0),
+            new(90_000_000_000_000_002, 0),
+        },
+
+        new Incremental[]
+        {
+            new(90_000_000_000_000_001, 1),
+            new(9, 0),
+            new(90_000_000_000_000_001, 1),
+        },
+
         // used in benchmark
         new Incremental[] { 3.141592e+10m, 2.45290e+8m, 3.166121e+10m },
         new Incremental[] { 0.00015m, 0.00000001325m, 0.00015001325m },
