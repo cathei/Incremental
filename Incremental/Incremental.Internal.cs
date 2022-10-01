@@ -11,14 +11,14 @@ namespace Cathei.Mathematics
 
         /// <summary>
         /// Maximum powers of 10.
-        /// It will be inaccurate in long type when make this number higher.
+        /// It will be inaccurate in ulong type when make this number higher.
         /// </summary>
-        private const int MaxPowersOf10Range = 18;
+        private const int MaxPowersOf10Range = 19;
 
         /// <summary>
         /// Lookup table for power of 10s.
         /// </summary>
-        private static readonly long[] PowersOf10 = new long[MaxPowersOf10Range + 1];
+        private static readonly ulong[] PowersOf10 = new ulong[MaxPowersOf10Range + 1];
         
         /// <summary>
         /// Pre-calculated 9,007,199,254,740,992 / 10,000,000,000,000,000 (Unit) value under decimal point.
@@ -29,7 +29,7 @@ namespace Cathei.Mathematics
 
         static Incremental()
         {
-            long value = 1;
+            ulong value = 1;
 
             for (int i = 0; i <= MaxPowersOf10Range; ++i)
             {
@@ -91,7 +91,12 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Internal common log for normalization.
         /// </summary>
-        private static int Log10Int(long value)
+        private static int Log10Int(long value) => Log10Int(ref value);
+        
+        /// <summary>
+        /// Internal common log for normalization.
+        /// </summary>
+        private static int Log10Int(ref long value)
         {
             int result = 0;
 
@@ -238,66 +243,40 @@ namespace Cathei.Mathematics
                     return 53;
             }
         }
+
+        private static int FindBestMultiplier(ulong value)
+        {
+            long remainder = (long)value;
+            int log10 = Log10Int(ref remainder);
+            
+            // because of uint max
+            if (remainder == 1)
+                log10--;
+
+            return 2 + Precision - log10;
+        }
         
         /// <summary>
         /// Divide two normalized ulong and returns result mantissa.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
-        private static ulong DivideUInt64(ulong a, ulong b)
+        private static long DivideUInt64(ulong a, ulong b)
         {
-            // int shiftA = GetLeadingBitShiftLeft(a);
-            // int shiftB = GetLeadingBitShiftLeft(b);
-            //
-            // int shift;
-            //
-            // // alignment
-            // if (shiftA < shiftB)
-            // {
-            //     a <<= shiftB - shiftA;
-            //     shift = shiftB;
-            // }
-            // else
-            // {
-            //     b <<= shiftA - shiftB;
-            //     shift = shiftA;
-            // }
-            //
-            // ulong result = 0;
-            //
-            // while (shift > 0)
-            // {
-            //     if (a < b)
-            //     {
-            //         shift--;
-            //         continue;
-            //     }
-            //
-            //     a -= b;
-            //     result |= (1u << shift);
-            //
-            //     if (a == 0)
-            //         break;
-            //
-            //     a <<= 1;
-            //     shift--;
-            // }
-            //
-            // return result;
-
-
-            ulong result = 0;
+            long result = 0;
+            
             int exponent = Precision;
             
             while (a > 0 && exponent > 0)
             {
-                a *= 100;
-                exponent -= 2;
+                int diff = FindBestMultiplier(a);
+                a *= PowersOf10[diff];
+                exponent -= diff;
 
                 // mul and rem would be single operation in CPU
                 ulong q = a / b;
                 a %= b;
-                
-                result += q * (ulong)PowersOf10[exponent];
+
+                result += MultiplyPow10((long)q, exponent);
             }
             
             return result;
