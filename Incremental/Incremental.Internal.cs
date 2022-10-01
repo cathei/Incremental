@@ -19,7 +19,7 @@ namespace Cathei.Mathematics
         /// Lookup table for power of 10s.
         /// </summary>
         private static readonly ulong[] PowersOf10 = new ulong[MaxPowersOf10Range + 1];
-        
+
         /// <summary>
         /// Pre-calculated 9,007,199,254,740,992 / 10,000,000,000,000,000 (Unit) value under decimal point.
         /// Used for multiplication.
@@ -38,11 +38,18 @@ namespace Cathei.Mathematics
             }
         }
 
+        private static long MultiplyPow10(long value, int pow)
+        {
+            if (value >= 0)
+                return (long)MultiplyPow10((ulong)value, pow);
+            return -(long)MultiplyPow10((ulong)-value, pow);
+        }
+
         /// <summary>
         /// Fast multiply or divide by pow 10.
         /// The constant division will be optimized by compiler.
         /// </summary>
-        private static long MultiplyPow10(long value, long pow)
+        private static ulong MultiplyPow10(ulong value, int pow)
         {
             switch (pow)
             {
@@ -65,6 +72,7 @@ namespace Cathei.Mathematics
                 case 16: return value * 10_000_000_000_000_000;
                 case 17: return value * 100_000_000_000_000_000;
                 case 18: return value * 1_000_000_000_000_000_000;
+                case 19: return value * 10_000_000_000_000_000_000;
                 case -1: return value / 10;
                 case -2: return value / 100;
                 case -3: return value / 1_000;
@@ -83,6 +91,7 @@ namespace Cathei.Mathematics
                 case -16: return value / 10_000_000_000_000_000;
                 case -17: return value / 100_000_000_000_000_000;
                 case -18: return value / 1_000_000_000_000_000_000;
+                case -19: return value / 10_000_000_000_000_000_000;
             }
 
             throw new OverflowException();
@@ -100,7 +109,7 @@ namespace Cathei.Mathematics
                 result += 16;
                 value /= 1_0000_0000_0000_0000L;
             }
-            else // maximum log 10 for long type is 18 
+            else // maximum log 10 for long type is 19
             {
                 if (value >= 1_0000_0000L)
                 {
@@ -123,7 +132,7 @@ namespace Cathei.Mathematics
 
             if (value >= 10)
                 result += 1;
-            
+
             return result;
         }
 
@@ -145,14 +154,14 @@ namespace Cathei.Mathematics
         {
             uint aUpper = (uint)(a >> 32);
             uint aLower = (uint)a;
-            
+
             uint bUpper = (uint)(b >> 32);
             uint bLower = (uint)b;
 
             ulong hi = MultiplyUInt32(aUpper, bUpper);
             ulong mid1 = MultiplyUInt32(aUpper, bLower);
             ulong mid2 = MultiplyUInt32(aLower, bUpper);
-            
+
             // we could calculate carry bits
             // but Incremental have some unused bits as padding, so should be fine
             return hi + (mid1 >> 32) + (mid2 >> 32);
@@ -161,118 +170,58 @@ namespace Cathei.Mathematics
             // ulong carry = ((ulong)(uint)mid1 + (ulong)(uint)mid2 + (lo >> 32)) >> 32;
             // return hi + (mid1 >> 32) + (mid2 >> 32) + carry;
         }
-        
-        // /// <summary>
-        // /// Full multiply two ulong and takes upper 128 bits
-        // /// Formula = (a * b) = ((aUpper + aLower) * (bUpper + bLower)) =
-        // /// ((aUpper * bUpper) + (aUpper * bLower) + (aLower * bUpper) + (aLower * bLower)).
-        // /// https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
-        // /// </summary>
-        // private static (ulong hi, ulong lo) MultiplyUInt128(ulong a, ulong b)
-        // {
-        //     uint aUpper = (uint)(a >> 32);
-        //     uint aLower = (uint)a;
-        //     
-        //     uint bUpper = (uint)(b >> 32);
-        //     uint bLower = (uint)b;
-        //
-        //     ulong hi = MultiplyUInt32(aUpper, bUpper);
-        //     ulong mid1 = MultiplyUInt32(aUpper, bLower);
-        //     ulong mid2 = MultiplyUInt32(aLower, bUpper);
-        //     ulong lo = MultiplyUInt32(aLower, bLower);
-        //     
-        //     ulong carry = ((ulong)(uint)mid1 + (ulong)(uint)mid2 + (lo >> 32)) >> 32;
-        //
-        //     lo += (mid1 << 32) + (mid2 << 32);
-        //     hi += (mid1 >> 32) + (mid2 >> 32) + carry;
-        //
-        //     return (hi, lo);
-        // }
-        //
-        // private static void Divide128(out (ulong upper, ulong lower) quotient, ref (ulong upper, ulong lower) value, UInt64 divider)
-        // {
-        //     quotient.upper = quotient.lower = 0;
-        //     // var dneg = GetBitLength((UInt32)(divider >> 32));
-        //     // var d = 32 - dneg;
-        //     var vPrime = divider << d;
-        //     var v1 = (UInt32)(vPrime >> 32);
-        //     var v2 = (UInt32)vPrime;
-        //     var r0 = value.r0;
-        //     var r1 = value.r1;
-        //     var r2 = value.r2;
-        //     var r3 = value.r3;
-        //     var r4 = (UInt32)0;
-        //     // if (d != 0)
-        //     // {
-        //     //     r4 = r3 >> dneg;
-        //     //     r3 = r3 << d | r2 >> dneg;
-        //     //     r2 = r2 << d | r1 >> dneg;
-        //     //     r1 = r1 << d | r0 >> dneg;
-        //     //     r0 <<= d;
-        //     // }
-        //     quotient.lower = DivRem(r4, ref r3, ref r2, v1, v2);
-        //     var q1 = DivRem(r3, ref r2, ref r1, v1, v2);
-        //     var q0 = DivRem(r2, ref r1, ref r0, v1, v2);
-        //     quotient.upper = (UInt64)q1 << 32 | q0;
-        //     Debug.Assert((BigInteger)quotient == (BigInteger)value / divider);
-        // }
 
-        
         /// <summary>
-        /// For normalized ulong, there is only 4 case
+        /// Used for division.
         /// </summary>
-        private static short GetLeadingBitShiftLeft(ulong value)
-        {
-            if (value >= 0x0080_0000_0000_0000)
-            {
-                if (value >= 0x0100_0000_0000_0000)
-                    return 56;
-                else
-                    return 55;
-            }
-            else
-            {
-                if (value >= 0x0040_0000_0000_0000)
-                    return 54;
-                else
-                    return 53;
-            }
-        }
-
         private static int FindBestMultiplier(ulong value)
         {
             int log10 = Log10Int(value);
             return 2 + Precision - log10;
         }
-        
+
         /// <summary>
         /// Divide two normalized ulong and returns result mantissa.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
-        private static long DivideUInt64(ulong a, ulong b)
+        private static ulong DivideUInt64(ulong a, ulong b)
         {
-            long result = 0;
-            
+            ulong result = 0;
+
             int exponent = Precision;
             int diff = 2;
-            
+
+            // truncate divisor first
+            while (b % 10 == 0)
+            {
+                b /= 10;
+                exponent--;
+            }
+
             while (true)
             {
                 a *= PowersOf10[diff];
                 exponent -= diff;
 
+                if (a <= ulong.MaxValue / 10)
+                {
+                    // you can scale one more, lucky!
+                    a *= 10;
+                    exponent--;
+                }
+
                 // div and rem would be single operation in CPU
                 ulong q = a / b;
                 a %= b;
 
-                result += MultiplyPow10((long)q, exponent);
+                result += MultiplyPow10(q, exponent);
 
                 if (a == 0 || exponent <= 0)
                     break;
-                
+
                 diff = FindBestMultiplier(a);
             }
-            
+
             return result;
         }
 
@@ -290,7 +239,7 @@ namespace Cathei.Mathematics
         }
 
         private readonly struct AlreadyNormalized { }
-        
+
         #endregion
     }
 }

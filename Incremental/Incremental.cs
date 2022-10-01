@@ -70,7 +70,7 @@ namespace Cathei.Mathematics
             Mantissa = mantissa;
             Exponent = exponent;
         }
-        
+
         // Private constructor for the case we already know it's normalized
         private Incremental(long mantissa, long exponent, AlreadyNormalized _)
         {
@@ -94,7 +94,7 @@ namespace Cathei.Mathematics
 
             // match to bigger exponent
             var mantissa = b.Mantissa;
-            mantissa += MultiplyPow10(a.Mantissa, -exponentDiff);
+            mantissa += MultiplyPow10(a.Mantissa, -(int)exponentDiff);
 
             return new Incremental(mantissa, b.Exponent);
         }
@@ -120,13 +120,13 @@ namespace Cathei.Mathematics
             ulong result = MultiplyUInt64(
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa) << 7,
                 InverseUnitShift53);
-            
+
             // we takes upper 64 bit, result is shifted left by 53 + 7
             // now safely shift B as well and multiply with result, take upper 64 bit
             result = MultiplyUInt64(
                 (ulong)(bNegative ? -b.Mantissa : b.Mantissa) << 7,
                 result);
-            
+
             // now the result is shifted left by 3
             // round the result first: should be enough to just add constant 4 (0b100), to round from third bit
             // because we will shift down the result, exact lower bits wouldn't matter (not significant)
@@ -162,7 +162,7 @@ namespace Cathei.Mathematics
             long mantissa = (long)DivideUInt64(
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa),
                 (ulong)(bNegative ? -b.Mantissa : b.Mantissa));
-            
+
             long exponent = a.Exponent - b.Exponent;
 
             if (mantissa < Unit)
@@ -175,7 +175,7 @@ namespace Cathei.Mathematics
             // apply sign
             if (aNegative ^ bNegative)
                 mantissa = -mantissa;
-            
+
             return new Incremental(mantissa, exponent, new AlreadyNormalized());
         }
 
@@ -398,12 +398,12 @@ namespace Cathei.Mathematics
 
             long mantissa = value.Mantissa;
 
-            mantissa = MultiplyPow10(mantissa, -exponentDiff);
-            mantissa = MultiplyPow10(mantissa, exponentDiff);
+            mantissa = MultiplyPow10(mantissa, -(int)exponentDiff);
+            mantissa = MultiplyPow10(mantissa, (int)exponentDiff);
 
             return new Incremental(mantissa, value.Exponent);
         }
-        
+
         #endregion
 
         #region Override methods
