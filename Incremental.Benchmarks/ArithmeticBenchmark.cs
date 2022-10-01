@@ -26,8 +26,8 @@ public class ArithmeticBenchmark
 
     public ArithmeticBenchmark()
     {
-        doubleA = Rng.NextDouble() * 200000 - 100000;
-        doubleB = Rng.NextDouble() * 200000 - 100000;
+        doubleA = Rng.NextDouble() * 2000000 - 1000000;
+        doubleB = Rng.NextDouble() * 2000000 - 1000000;
 
         decimalA = (decimal)doubleA;
         decimalB = (decimal)doubleB;

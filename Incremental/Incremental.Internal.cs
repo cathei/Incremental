@@ -91,12 +91,7 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Internal common log for normalization.
         /// </summary>
-        private static int Log10Int(long value) => Log10Int(ref value);
-        
-        /// <summary>
-        /// Internal common log for normalization.
-        /// </summary>
-        private static int Log10Int(ref long value)
+        private static int Log10Int(ulong value)
         {
             int result = 0;
 
@@ -246,13 +241,7 @@ namespace Cathei.Mathematics
 
         private static int FindBestMultiplier(ulong value)
         {
-            long remainder = (long)value;
-            int log10 = Log10Int(ref remainder);
-            
-            // because of uint max
-            if (remainder == 1)
-                log10--;
-
+            int log10 = Log10Int(value);
             return 2 + Precision - log10;
         }
         
@@ -265,18 +254,23 @@ namespace Cathei.Mathematics
             long result = 0;
             
             int exponent = Precision;
+            int diff = 2;
             
-            while (a > 0 && exponent > 0)
+            while (true)
             {
-                int diff = FindBestMultiplier(a);
                 a *= PowersOf10[diff];
                 exponent -= diff;
 
-                // mul and rem would be single operation in CPU
+                // div and rem would be single operation in CPU
                 ulong q = a / b;
                 a %= b;
 
                 result += MultiplyPow10((long)q, exponent);
+
+                if (a == 0 || exponent <= 0)
+                    break;
+                
+                diff = FindBestMultiplier(a);
             }
             
             return result;

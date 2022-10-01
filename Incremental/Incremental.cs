@@ -62,7 +62,7 @@ namespace Cathei.Mathematics
             // normalize
             if (abs < Unit || abs >= Unit * 10)
             {
-                var adjustment = Precision - Log10Int(abs);
+                var adjustment = Precision - Log10Int((ulong)abs);
                 mantissa = MultiplyPow10(mantissa, adjustment);
                 exponent -= adjustment;
             }
