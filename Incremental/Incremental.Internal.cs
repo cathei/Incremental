@@ -176,7 +176,7 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Used for division.
         /// </summary>
-        private static int FindBestMultiplier(ulong value)
+        private static int FindDividendScale(ulong value)
         {
             int log10 = Log10Int(value);
             return 2 + Precision - log10;
@@ -197,21 +197,26 @@ namespace Cathei.Mathematics
             // it is safe to multiply 100 at first loop
             int diff = 2;
 
-            // truncate divisor first
-            while (b % 10 == 0)
+            // first shift divisor to rightmost place
+            ulong bTenth = b / 10;
+
+            while (b == bTenth * 10)
             {
-                b /= 10;
+                b = bTenth;
+                bTenth = b / 10;
                 exponent--;
             }
 
+            // do partial division iteration
             while (true)
             {
+                // shift dividend to leftmost place
                 a *= PowersOf10[diff];
                 exponent -= diff;
 
                 if (a <= ulong.MaxValue / 10)
                 {
-                    // you can scale one more, lucky!
+                    // you've got to scale one more, lucky!
                     a *= 10;
                     exponent--;
                 }
@@ -220,12 +225,13 @@ namespace Cathei.Mathematics
                 ulong q = a / b;
                 a -= q * b;
 
+                // write to result
                 result += MultiplyPow10(q, exponent);
 
                 if (a == 0 || exponent <= 0)
                     break;
 
-                diff = FindBestMultiplier(a);
+                diff = FindDividendScale(a);
             }
 
             return result;
