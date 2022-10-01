@@ -4,9 +4,9 @@ using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using Cathei.Mathematics.Benchmarks;
 
-var summaries = new List<Summary>();
+BenchmarkRunner.Run<ArithmeticBenchmark>();
 
-summaries.Add(BenchmarkRunner.Run<AdditionBenchmark>());
-summaries.Add(BenchmarkRunner.Run<SubtractionBenchmark>());
-summaries.Add(BenchmarkRunner.Run<MultiplicationBenchmark>());
-summaries.Add(BenchmarkRunner.Run<DivisionBenchmark>());
+// summaries.Add(BenchmarkRunner.Run<AdditionBenchmark>());
+// summaries.Add(BenchmarkRunner.Run<SubtractionBenchmark>());
+// summaries.Add(BenchmarkRunner.Run<MultiplicationBenchmark>());
+// summaries.Add(BenchmarkRunner.Run<DivisionBenchmark>());
