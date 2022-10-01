@@ -24,6 +24,12 @@ public class SubtractionTests
         new Incremental[] { 99.999m, 1.111m, 98.888m },
         new Incremental[] { new(Unit, 99), new(Unit, 0), new(Unit, 99) },
         new Incremental[] { new(10_000_000_000_000_001, 0), 0, new(10_000_000_000_000_001, 0) },
+
+        // used in benchmark
+        new Incremental[] { 3.141592e+10m, 2.45290e+8m, 3.117063e+10m },
+        new Incremental[] { 0.00015m, 0.00000001325m, 0.00014998675m },
+        new Incremental[] { 90.12308590830902345m, 72.3499590238902103m, 17.77312688441881315m },
+        new Incremental[] { 0.02m, 5050, -5049.98m },
     };
 
     [TestCaseSource(nameof(SubtractionTestData))]

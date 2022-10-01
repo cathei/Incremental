@@ -6,9 +6,9 @@ using BreakInfinity;
 
 namespace Cathei.Mathematics.Benchmarks;
 
-// [ShortRunJob]
+[ShortRunJob]
 // [DryJob]
-[SimpleJob(invocationCount: 10000000)]
+// [SimpleJob(invocationCount: 1000000000)]
 [MarkdownExporterAttribute.GitHub]
 public class ArithmeticBenchmark
 {

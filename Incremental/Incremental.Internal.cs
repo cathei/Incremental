@@ -40,13 +40,6 @@ namespace Cathei.Mathematics
             }
         }
 
-        private static long MultiplyPow10(long value, int pow)
-        {
-            if (value >= 0)
-                return (long)MultiplyPow10((ulong)value, pow);
-            return -(long)MultiplyPow10((ulong)-value, pow);
-        }
-
         /// <summary>
         /// Fast multiply or divide by pow 10.
         /// The constant division will be optimized by compiler.

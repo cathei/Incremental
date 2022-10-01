@@ -24,6 +24,12 @@ public class AdditionTests
         new Incremental[] { 99.999m, 1.111m, 101.110m },
         new Incremental[] { new(Unit, 99), new(Unit, 0), new(Unit, 99) },
         new Incremental[] { new(10_000_000_000_000_001, 0), 0, new(10_000_000_000_000_001, 0) },
+
+        // used in benchmark
+        new Incremental[] { 3.141592e+10m, 2.45290e+8m, 3.166121e+10m },
+        new Incremental[] { 0.00015m, 0.00000001325m, 0.00015001325m },
+        new Incremental[] { 90.12308590830902345m, 72.3499590238902103m, 162.47304493219923m },
+        new Incremental[] { 0.02m, 5050, 5050.02m },
     };
 
     [TestCaseSource(nameof(AdditionTestData))]

@@ -65,6 +65,12 @@ public class MultiplicationTests
             new(99_999_999_999_999_999, 0),
             new(99_999_999_999_999_998, 1)
         },
+
+        // used in benchmark
+        new Incremental[] { 3.141592e+10m, 2.45290e+8m, 7.7060110168e+18m },
+        new Incremental[] { 0.00015m, 0.00000001325m, 0.0000000000019875m },
+        new Incremental[] { 90.12308590830902345m, 72.3499590238902103m, 6520.4015725726950811720m },
+        new Incremental[] { 0.02m, 5050, 101 },
     };
 
     [TestCaseSource(nameof(MultiplicationTestData))]

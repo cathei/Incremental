@@ -115,8 +115,8 @@ namespace Cathei.Mathematics
             if (a.Mantissa == 0 || b.Mantissa == 0)
                 return Zero;
 
-            bool aNegative = a.Mantissa < 0;
-            bool bNegative = b.Mantissa < 0;
+            bool aNegative = a.IsNegative;
+            bool bNegative = b.IsNegative;
 
             // since we use only 57 bits of 64 as mantissa we shift the bits for calculation
             // first we generate value of A / Unit
@@ -161,8 +161,8 @@ namespace Cathei.Mathematics
             if (a.Mantissa == 0)
                 return Zero;
 
-            bool aNegative = a.Mantissa < 0;
-            bool bNegative = b.Mantissa < 0;
+            bool aNegative = a.IsNegative;
+            bool bNegative = b.IsNegative;
 
             long mantissa = (long)DivideUInt64(
                 (ulong)(aNegative ? -a.Mantissa : a.Mantissa),

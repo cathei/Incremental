@@ -15,6 +15,9 @@ Incremental Deterministic Decimal Number type in C#
 * HUGE representation range from 1E-(2^63) to 9.99E+(2^63-1)
   * Means you can have 9,223,372,036,854,775,807 zeros
 
+## Installation
+Clone this repository and copy `Incremental.cs` and `Incremental.Internal.cs` to your project.
+
 ## Comparison
 | Category         | Incremental          | decimal       | BreakInfinity BigDouble   |
 |------------------|----------------------|---------------|---------------------------|

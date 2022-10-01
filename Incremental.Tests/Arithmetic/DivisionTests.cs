@@ -23,6 +23,7 @@ public class DivisionTests
         new Incremental[] { 10.03m, 2.08m, new(48_221_153_846_153_846, 0) },
         new Incremental[] { 99.999m, 11.111m, 9 },
         new Incremental[] { new(Unit, 90), new(Unit, -10), new(Unit, 100) },
+
         new Incremental[]
         {
             new(9 * Unit, 99),
@@ -59,6 +60,12 @@ public class DivisionTests
             new(99_999_999_999_999_999, 0),
             new(99_999_999_999_999_998, 0)
         },
+
+        // used in benchmark
+        new Incremental[] { 3.141592e+10m, 2.45290e+8m, 1.2807664397244078e+2m },
+        new Incremental[] { 0.00015m, 0.00000001325m, 11320.754716981132m },
+        new Incremental[] { 90.12308590830902345m, 72.3499590238902103m, 1.2456549682156705m },
+        new Incremental[] { 0.02m, 5050, 3.9603960396039603e-6m },
     };
 
     [TestCaseSource(nameof(DivisionTestData))]
