@@ -52,14 +52,4 @@ public class TruncateTests
         Assert.AreEqual((Incremental)round, Round(value, exponent));
         Assert.AreEqual((Incremental)round, Round(round, exponent));
     }
-    //
-    // [TestCaseSource(nameof(TruncateTestData))]
-    // public void TestRound(Incremental value, long exponent, Incremental result)
-    // {
-    //     Assert.AreEqual(result, Truncate(value, exponent));
-    //     Assert.AreEqual(result, Truncate(result, exponent));
-    //
-    //     Assert.AreEqual(-result, Truncate(-value, exponent));
-    //     Assert.AreEqual(-result, Truncate(-result, exponent));
-    // }
 }

@@ -32,7 +32,6 @@ public class DecimalConversionTests
         new object[] { new Incremental(-2147483648L, Precision), (long)int.MinValue },
 
         // last two digit will not be preserved.
-        // we also cannot take Abs for long type min value, it will cause OverflowException
         new object[] { new Incremental(92_233_720_368_547_758L, Precision + 2), long.MaxValue - 7L },
         new object[] { new Incremental(-92_233_720_368_547_758L, Precision + 2), long.MinValue + 8L },
     };
