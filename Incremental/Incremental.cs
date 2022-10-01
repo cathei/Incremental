@@ -57,17 +57,18 @@ namespace Cathei.Mathematics
                 return;
             }
 
-            long abs = Math.Abs(mantissa);
+            bool isNegative = mantissa < 0;
+            ulong abs = (ulong)(isNegative ? -mantissa : mantissa);
 
             // normalize
             if (abs < Unit || abs >= Unit * 10)
             {
-                var adjustment = Precision - Log10Int((ulong)abs);
-                mantissa = MultiplyPow10(mantissa, adjustment);
+                var adjustment = Precision - Log10Int(abs);
+                abs = MultiplyPow10(abs, adjustment);
                 exponent -= adjustment;
             }
 
-            Mantissa = mantissa;
+            Mantissa = isNegative ? -(long)abs : (long)abs;
             Exponent = exponent;
         }
 
@@ -93,8 +94,12 @@ namespace Cathei.Mathematics
                 return b;
 
             // match to bigger exponent
-            var mantissa = b.Mantissa;
-            mantissa += MultiplyPow10(a.Mantissa, -(int)exponentDiff);
+            long mantissa = b.Mantissa;
+
+            if (a.IsNegative)
+                mantissa -= (long)MultiplyPow10((ulong)-a.Mantissa, -(int)exponentDiff);
+            else
+                mantissa += (long)MultiplyPow10((ulong)a.Mantissa, -(int)exponentDiff);
 
             return new Incremental(mantissa, b.Exponent);
         }
@@ -396,14 +401,59 @@ namespace Cathei.Mathematics
             if (exponentDiff < 0)
                 return value;
 
-            long mantissa = value.Mantissa;
+            bool isNegative = value.IsNegative;
+            ulong mantissa = (ulong)(isNegative ? -value.Mantissa : value.Mantissa);
 
             mantissa = MultiplyPow10(mantissa, -(int)exponentDiff);
             mantissa = MultiplyPow10(mantissa, (int)exponentDiff);
 
-            return new Incremental(mantissa, value.Exponent, new AlreadyNormalized());
+            return new Incremental(isNegative ? -(long)mantissa : (long)mantissa,
+                value.Exponent, new AlreadyNormalized());
         }
 
+        /// <summary>
+        /// Round the value. If exponent is specified, the digit of 1E+exponent will be least significant.
+        /// </summary>
+        public static Incremental Round(in Incremental value, long exponent = 0)
+        {
+            // rounding away from zero
+            var offset = new Incremental(
+                (value.IsNegative ? -5 : 5) * Unit,
+                exponent - 1, new AlreadyNormalized());
+
+            return Truncate(value + offset, exponent);
+        }
+
+        /// <summary>
+        /// Floor the value. If exponent is specified, the digit of 1E+exponent will be least significant.
+        /// </summary>
+        public static Incremental Floor(in Incremental value, long exponent = 0)
+        {
+            var truncated = Truncate(value, exponent);
+            if (value.Mantissa >= 0)
+                return truncated;
+
+            if (value.Mantissa == truncated.Mantissa)
+                return truncated;
+
+            var offset = new Incremental(Unit, exponent, new AlreadyNormalized());
+            return truncated - offset;
+        }
+
+        /// <summary>
+        /// Ceiling the value. If exponent is specified, the digit of 1E+exponent will be least significant.
+        /// </summary>
+        public static Incremental Ceiling(in Incremental value, long exponent = 0)
+        {
+            var truncated = Truncate(value, exponent);
+            if (value.Mantissa <= 0)
+                return truncated;
+
+            if (value.Mantissa == truncated.Mantissa)
+                return truncated;
+
+            var offset = new Incremental(Unit, exponent, new AlreadyNormalized());
+            return truncated + offset;
         }
 
         #endregion

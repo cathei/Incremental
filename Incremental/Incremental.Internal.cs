@@ -27,6 +27,8 @@ namespace Cathei.Mathematics
         /// </summary>
         private const ulong InverseUnitShift53 = 0xE695_94BE_C44D_E15B;
 
+        private bool IsNegative => Mantissa < 0;
+
         static Incremental()
         {
             ulong value = 1;
@@ -214,9 +216,9 @@ namespace Cathei.Mathematics
                     exponent--;
                 }
 
-                // div and rem would be single operation in CPU
+                // there is no Math.DivRem for UInt64?
                 ulong q = a / b;
-                a %= b;
+                a -= q * b;
 
                 result += MultiplyPow10(q, exponent);
 
