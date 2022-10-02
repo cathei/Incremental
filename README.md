@@ -52,12 +52,12 @@ Absolute value of `Mantissa` is always `Unit <= x < Unit * 10`, except when it i
 `Exponent` is power of 10 value to multiply `Mantissa`. `Exponent` is signed and can represent smaller value than `1`.
 
 ### Multiplication
-Since 128-bit math is not native in 64-bit system, `Incremental` does partial multiplication and division.
+128-bit math is not native in 64-bit system, `Incremental` does partial multiplication.
 
 For multiplication, the result mantissa would be `a * b / Unit`.
 Since result of `a * b` will overflow in 64-bit size, `Incremental` has to calculate `a / Unit` first then multiply by `b`.
 
-We can represent a fractal part of `1 / Unit` (`0x0.000...734ACA5F6226F0ADA6`), then by shifting it left to remove leading zeros for precision.
+We can represent a fractal part of `1 / Unit` (`0x0.000...734ACA5F6226F0ADA6...`), then by shifting it left to remove leading zeros for precision.
 Then we get magic number `0xE69594BEC44DE15B` which is `(1 / Unit) << 53 << 64`.
 
 We can remove unused bit of `a`'s mantissa with shifting it's value left by 7 bits, then multiply with magic number.
@@ -71,6 +71,13 @@ The procedural is fast because only multiplication is involved. It is similar to
 Further reading: [Explanation on StackOverflow](https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication)
 
 ### Division
+As same reason as multiplication, we have to do partial division.
+However partial division is not simple as multiplication, we cannot simply choose to take upper bit and divide.
 
-[//]: # (For division, we have to do partial division by )
+While other algorithm is required for full division of 128-bit dividend and 64-bit divisor,
+Using some unused bits of `Incremental` data type, we can calculate the quotient with multiple 64-bit division.
 
+By removing leading zero of dividend and trailing zeros of divisor, we can do partial division and get intermediate quotient.
+Shift and add the quotient to result. If there is remainder, we can repeat the procedure until there is no remainder or bits are not significant anymore.
+
+Finally, doing multiplication between binary quotient and `Unit`, we can get normalized mantissa of the quotient.

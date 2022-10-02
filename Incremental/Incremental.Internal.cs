@@ -256,6 +256,7 @@ namespace Cathei.Mathematics
         /// Divide two normalized ulong and returns result mantissa.
         /// This method produces value that has one less exponent of [Unit, Unit * 100) range.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
+        /// https://stackoverflow.com/questions/2566010/fastest-way-to-calculate-a-128-bit-integer-modulo-a-64-bit-integer
         /// </summary>
         private static ulong DivideUInt64(ulong dividend, ulong divisor)
         {
