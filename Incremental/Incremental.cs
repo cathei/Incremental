@@ -43,6 +43,22 @@ namespace Cathei.Mathematics
         public static readonly Incremental One = new Incremental(Unit, 0, new AlreadyNormalized());
 
         /// <summary>
+        /// Value of Ln 10.
+        /// </summary>
+        public static readonly Incremental Ln10 = new Incremental(
+            23_025_850_929_940_457, 0, new AlreadyNormalized());
+
+        /// <summary>
+        /// Value of E (base of natural log).
+        /// </summary>
+        public static readonly Incremental E = new Incremental(
+            27_182_818_284_590_452, 0, new AlreadyNormalized());
+
+        public bool IsNegative => Mantissa < 0;
+
+        public bool IsZero => Mantissa == 0;
+
+        /// <summary>
         /// Construct Incremental value manually. The value will be normalized.
         /// (Unit, 0) will be same as (1, Precision).
         /// </summary>
@@ -112,7 +128,7 @@ namespace Cathei.Mathematics
         public static Incremental Multiply(in Incremental a, in Incremental b)
         {
             // rule out zero first
-            if (a.Mantissa == 0 || b.Mantissa == 0)
+            if (a.IsZero || b.IsZero)
                 return Zero;
 
             bool aNegative = a.IsNegative;
@@ -154,11 +170,11 @@ namespace Cathei.Mathematics
 
         public static Incremental Divide(in Incremental a, in Incremental b)
         {
-            if (b.Mantissa == 0)
+            if (b.IsZero)
                 throw new DivideByZeroException();
 
             // rule out zero first
-            if (a.Mantissa == 0)
+            if (a.IsZero)
                 return Zero;
 
             bool aNegative = a.IsNegative;
@@ -373,13 +389,75 @@ namespace Cathei.Mathematics
         public static Incremental Abs(in Incremental value)
             => new Incremental(Math.Abs(value.Mantissa), value.Exponent, new AlreadyNormalized());
 
-        // /// <summary>
-        // /// Returns Log10 value. (undefined when value is not positive)
-        // /// </summary>
-        // public static Incremental Log10(in Incremental value)
-        // {
-        //
-        // }
+        /// <summary>
+        /// Returns natural logarithm of the value.
+        /// </summary>
+        public static Incremental Log(in Incremental value)
+        {
+            if (value.IsNegative)
+                throw new ArgumentException("Log of negative value is complex number", nameof(value));
+
+            if (value.IsZero)
+                throw new OverflowException("Log of 0 is -Infinity");
+
+            var result = Ln10 * value.Exponent;
+
+            // Log of 1 is 0, result is calculated with Ln10
+            if (value.Mantissa == Unit)
+                return result;
+
+            var x = new Incremental(value.Mantissa, 0, new AlreadyNormalized());
+
+            // Fit value into 0 < x < 2 range
+            if (value.Mantissa >= 2 * Unit)
+            {
+                x = new Incremental(x.Mantissa, -1, new AlreadyNormalized());
+                result += Ln10;
+
+                // it is faster when x is closer to 1, but cannot exceed 2
+                if (x.Mantissa <= 6 * Unit)
+                {
+                    x *= E;
+                    result--;
+                }
+            }
+
+            // Do Taylor series
+            var y = (x - One) / (x + One);
+            var ySquare = y * y;
+
+            // 0.9999 / 2.9999 ... 0.0001 / 2.0001 ... -0.9999 / 1.0001
+
+            int iteration = 0;
+            var exp = y + y;
+
+            while (true)
+            {
+                var next = exp / (iteration * 2 + 1);
+
+                // value is not significant anymore
+                if (result.Exponent - next.Exponent > Precision)
+                    break;
+
+                result += next;
+                exp *= ySquare;
+
+                iteration++;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns logarithm of the value in specific base.
+        /// </summary>
+        public static Incremental Log(in Incremental value, in Incremental @base)
+        {
+            if (@base == One)
+                throw new ArgumentException("Log for base 1 is undefined", nameof(@base));
+
+            return Log(value) / Log(@base);
+        }
 
         /// <summary>
         /// Returns power of 10.

@@ -22,7 +22,6 @@ public class DoubleConversionTests
 
         new object[] { new Incremental(49785, Precision + 2), 4978500f, 10f },
         new object[] { new Incremental(-49785, Precision + 2), -4978500f, 10f },
-
     };
 
     [TestCaseSource(nameof(ConvertFloatTestData))]

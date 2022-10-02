@@ -27,8 +27,6 @@ namespace Cathei.Mathematics
         /// </summary>
         private const ulong InverseUnitShift53 = 0xE695_94BE_C44D_E15B;
 
-        private bool IsNegative => Mantissa < 0;
-
         static Incremental()
         {
             ulong value = 1;
