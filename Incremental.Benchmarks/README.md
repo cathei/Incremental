@@ -33,9 +33,9 @@ Current snapshot of the benchmark to compare later versions
 | IncrementalMul |           0.00015 |         1.325E-09 |  2.8434 ns | 0.3029 ns | 0.0166 ns |
 |   BigDoubleMul |           0.00015 |         1.325E-09 |  1.7365 ns | 0.5722 ns | 0.0314 ns |
 |      DoubleDiv |           0.00015 |         1.325E-09 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
-|     DecimalDiv |           0.00015 |         1.325E-09 | 27.2848 ns | 0.5494 ns | 0.0301 ns |
-| IncrementalDiv |           0.00015 |         1.325E-09 | 18.9471 ns | 1.5269 ns | 0.0837 ns |
-|   BigDoubleDiv |           0.00015 |         1.325E-09 | 20.2245 ns | 0.7196 ns | 0.0394 ns |
+|     DecimalDiv |           0.00015 |         1.325E-09 | 27.1256 ns | 2.0006 ns | 0.1097 ns |
+| IncrementalDiv |           0.00015 |         1.325E-09 | 14.0793 ns | 5.3482 ns | 0.2932 ns |
+|   BigDoubleDiv |           0.00015 |         1.325E-09 | 20.6462 ns | 2.0128 ns | 0.1103 ns |
 |      DoubleAdd |              0.02 |              5050 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
 |     DecimalAdd |              0.02 |              5050 |  4.8887 ns | 0.1093 ns | 0.0060 ns |
 | IncrementalAdd |              0.02 |              5050 |  4.3028 ns | 0.5745 ns | 0.0315 ns |
@@ -49,9 +49,9 @@ Current snapshot of the benchmark to compare later versions
 | IncrementalMul |              0.02 |              5050 |  3.2800 ns | 0.1097 ns | 0.0060 ns |
 |   BigDoubleMul |              0.02 |              5050 |  6.7544 ns | 0.2845 ns | 0.0156 ns |
 |      DoubleDiv |              0.02 |              5050 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
-|     DecimalDiv |              0.02 |              5050 | 21.5432 ns | 0.5105 ns | 0.0280 ns |
-| IncrementalDiv |              0.02 |              5050 | 19.5880 ns | 0.1708 ns | 0.0094 ns |
-|   BigDoubleDiv |              0.02 |              5050 |  9.6556 ns | 0.4462 ns | 0.0245 ns |
+|     DecimalDiv |              0.02 |              5050 | 21.3304 ns | 1.0778 ns | 0.0591 ns |
+| IncrementalDiv |              0.02 |              5050 | 16.9603 ns | 2.4903 ns | 0.1365 ns |
+|   BigDoubleDiv |              0.02 |              5050 |  9.4741 ns | 0.4831 ns | 0.0265 ns |
 |      DoubleAdd |       31415920000 |         245290000 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
 |     DecimalAdd |       31415920000 |         245290000 |  3.8144 ns | 0.3758 ns | 0.0206 ns |
 | IncrementalAdd |       31415920000 |         245290000 |  4.1149 ns | 0.1874 ns | 0.0103 ns |
@@ -65,9 +65,9 @@ Current snapshot of the benchmark to compare later versions
 | IncrementalMul |       31415920000 |         245290000 |  2.8917 ns | 0.7782 ns | 0.0427 ns |
 |   BigDoubleMul |       31415920000 |         245290000 |  1.8876 ns | 0.3695 ns | 0.0203 ns |
 |      DoubleDiv |       31415920000 |         245290000 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
-|     DecimalDiv |       31415920000 |         245290000 | 24.1081 ns | 0.4044 ns | 0.0222 ns |
-| IncrementalDiv |       31415920000 |         245290000 | 18.1155 ns | 0.1174 ns | 0.0064 ns |
-|   BigDoubleDiv |       31415920000 |         245290000 | 21.2846 ns | 0.6246 ns | 0.0342 ns |
+|     DecimalDiv |       31415920000 |         245290000 | 23.9483 ns | 0.1581 ns | 0.0087 ns |
+| IncrementalDiv |       31415920000 |         245290000 | 15.1092 ns | 3.3474 ns | 0.1835 ns |
+|   BigDoubleDiv |       31415920000 |         245290000 | 20.9709 ns | 0.2982 ns | 0.0163 ns |
 |      DoubleAdd | 90.12308590830902 | 72.34995902389021 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
 |     DecimalAdd | 90.12308590830902 | 72.34995902389021 |  5.1480 ns | 0.0517 ns | 0.0028 ns |
 | IncrementalAdd | 90.12308590830902 | 72.34995902389021 |  7.9057 ns | 1.3132 ns | 0.0720 ns |
@@ -81,7 +81,7 @@ Current snapshot of the benchmark to compare later versions
 | IncrementalMul | 90.12308590830902 | 72.34995902389021 |  3.4097 ns | 0.0534 ns | 0.0029 ns |
 |   BigDoubleMul | 90.12308590830902 | 72.34995902389021 |  6.7531 ns | 0.2219 ns | 0.0122 ns |
 |      DoubleDiv | 90.12308590830902 | 72.34995902389021 |  0.0000 ns | 0.0000 ns | 0.0000 ns |
-|     DecimalDiv | 90.12308590830902 | 72.34995902389021 | 45.3972 ns | 5.2270 ns | 0.2865 ns |
-| IncrementalDiv | 90.12308590830902 | 72.34995902389021 | 44.7589 ns | 2.1544 ns | 0.1181 ns |
-|   BigDoubleDiv | 90.12308590830902 | 72.34995902389021 | 20.9367 ns | 0.2469 ns | 0.0135 ns |
+|     DecimalDiv | 90.12308590830902 | 72.34995902389021 | 45.0046 ns | 4.6553 ns | 0.2552 ns |
+| IncrementalDiv | 90.12308590830902 | 72.34995902389021 | 22.9475 ns | 1.1554 ns | 0.0633 ns |
+|   BigDoubleDiv | 90.12308590830902 | 72.34995902389021 | 21.0721 ns | 0.3244 ns | 0.0178 ns |
 

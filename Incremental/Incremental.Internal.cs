@@ -261,14 +261,8 @@ namespace Cathei.Mathematics
         {
             ulong result = 0;
 
-            // the result value will be multiplied by 16
-            // we can later remove the error by multiplying 10/16
-            // very luckily it is okay to multiply 160 in our range!
-            // (Unit * 10 * 160 < ULONG MAX)
-            // ulong multiplier = ((ulong)Unit * 10) << 4;
-
             // the result value will be shift by 60
-            // because result of division never exceeds 10 (b1010)
+            // we need 4 bits margin since result of division would take as high as 10 (b1010)
             int shift = 60;
 
             // remove trailing zeros of divisor
