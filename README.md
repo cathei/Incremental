@@ -19,12 +19,12 @@ Incremental Deterministic Decimal Number type in C#
 Clone this repository and copy `Incremental.cs` and `Incremental.Internal.cs` to your project.
 
 ## Comparison
-| Category         | Incremental          | decimal       | BreakInfinity BigDouble   |
+| Category         | Incremental          | C# decimal       | BreakInfinity BigDouble   |
 |------------------|----------------------|---------------|---------------------------|
 | Size             | 16 bytes (long+long) | 16 bytes      | 16 bytes (double+long)    |
-| Representation   | decimal              | decimal       | binary                    |
+| Representation   | decimal (base 10)             | decimal (base 10)       | binary (base 2)                   |
 | Deterministic?   | Yes                  | Yes           | No                        |
-| Precision        | 17 digits            | 29 digits     | 17 digits                 |
+| Precision        | 17 digits            | 28~29 digits     | 15~17 digits                 |
 | Exponent (Up to) | 64 bits (E+2^63-1)   | 8 bits (E+28) | 64+11 bits (E+2^63-1+308) |
 
 Since `Incremental` uses decimal representation, you are able to write exact number as `0.1`,
@@ -38,7 +38,7 @@ For example, you could use it for input-synced lockstep scenario with incrementa
 Overall, you should consider using `Incremental` when you want very big number with decimal places and/or deterministic behaviour.
 
 ## Benchmarks
-You can also see the benchmark results in [Incremental.Benchmarks](Incremental.Benchmarks).
+You can see the benchmark results in [Incremental.Benchmarks](Incremental.Benchmarks).
 
 ## Implementation Details
 ### Data
