@@ -167,12 +167,89 @@ namespace Cathei.Mathematics
         }
 
         /// <summary>
-        /// Used for division.
+        /// Binary search CLZ, Used for division.
         /// </summary>
-        private static int FindDividendScale(ulong value)
+        private static int CountLeadingZeros(ulong value)
         {
-            int log10 = Log10Int(value);
-            return 2 + Precision - log10;
+            int result = 0;
+
+            if ((value & 0xFFFF_FFFF_0000_0000) == 0)
+            {
+                result += 32;
+                value <<= 32;
+            }
+
+            if ((value & 0xFFFF_0000_0000_0000) == 0)
+            {
+                result += 16;
+                value <<= 16;
+            }
+
+            if ((value & 0xFF00_0000_0000_0000) == 0)
+            {
+                result += 8;
+                value <<= 8;
+            }
+
+            if ((value & 0xF000_0000_0000_0000) == 0)
+            {
+                result += 4;
+                value <<= 4;
+            }
+
+            if ((value & 0xC000_0000_0000_0000) == 0)
+            {
+                result += 2;
+                value <<= 2;
+            }
+
+            if ((value & 0x8000_0000_0000_0000) == 0)
+                result++;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Binary search CTZ, Used for division
+        /// </summary>
+        private static int CountTrailingZeros(ulong value)
+        {
+            int result = 0;
+
+            if ((value & 0xFFFF_FFFF) == 0)
+            {
+                result += 32;
+                value >>= 32;
+            }
+
+            if ((value & 0xFFFF) == 0)
+            {
+                result += 16;
+                value >>= 16;
+            }
+
+            if ((value & 0x00FF) == 0)
+            {
+                result += 8;
+                value >>= 8;
+            }
+
+            if ((value & 0x000F) == 0)
+            {
+                result += 4;
+                value >>= 4;
+            }
+
+            if ((value & 0x0003) == 0)
+            {
+                result += 2;
+                value >>= 2;
+            }
+
+            if ((value & 0x0001) == 0)
+                result++;
+
+            return result;
         }
 
         /// <summary>
@@ -180,54 +257,59 @@ namespace Cathei.Mathematics
         /// This method produces value that has one less exponent of [Unit, Unit * 100) range.
         /// https://stackoverflow.com/questions/71440466/how-can-i-quickly-and-accurately-multiply-a-64-bit-integer-by-a-64-bit-fraction
         /// </summary>
-        private static ulong DivideUInt64(ulong a, ulong b)
+        private static ulong DivideUInt64(ulong dividend, ulong divisor)
         {
             ulong result = 0;
 
-            // produce one more digit so mantissa would be shifted
-            int exponent = Precision + 1;
+            // the result value will be multiplied by 16
+            // we can later remove the error by multiplying 10/16
+            // very luckily it is okay to multiply 160 in our range!
+            // (Unit * 10 * 160 < ULONG MAX)
+            // ulong multiplier = ((ulong)Unit * 10) << 4;
 
-            // it is safe to multiply 100 at first loop
-            int diff = 2;
+            // the result value will be shift by 60
+            // because result of division never exceeds 10 (b1010)
+            int shift = 60;
 
-            // first shift divisor to rightmost place
-            ulong bTenth = b / 10;
+            // remove trailing zeros of divisor
+            int diff = CountTrailingZeros(divisor);
 
-            while (b == bTenth * 10)
-            {
-                b = bTenth;
-                bTenth = b / 10;
-                exponent--;
-            }
+            divisor >>= diff;
+            shift -= diff;
 
             // do partial division iteration
             while (true)
             {
-                // shift dividend to leftmost place
-                a *= PowersOf10[diff];
-                exponent -= diff;
+                // this will be at least 7
+                diff = CountLeadingZeros(dividend);
 
-                if (a <= ulong.MaxValue / 10)
-                {
-                    // you've got to scale one more, lucky!
-                    a *= 10;
-                    exponent--;
-                }
+                // shift dividend to leftmost place
+                dividend <<= diff;
+                shift -= diff;
 
                 // there is no Math.DivRem for UInt64?
-                ulong q = a / b;
-                a -= q * b;
+                ulong quotient = dividend / divisor;
+                dividend -= quotient * divisor;
+
+                if (shift >= 0)
+                    quotient <<= shift;
+                else
+                    quotient >>= -shift;
 
                 // write to result
-                result += MultiplyPow10(q, exponent);
+                result += quotient;
 
-                if (a == 0 || exponent <= 0)
+                if (dividend == 0 || shift <= 0)
                     break;
-
-                diff = FindDividendScale(a);
             }
 
-            return result;
+            // do the 128 bit multiplication
+            // 7 is maximum shift as the multiplier will be Unit * 10 * 128
+            // value will be shifted left by 60 + 7, then take upper 64 bit
+            result = MultiplyUInt64(result, ((ulong)Unit * 10) << 7);
+
+            // now value is shifted by 3, round bit by adding 4 (0b100) then shift back
+            return (result + 4) >> 3;
         }
 
         private static decimal ToDecimalNormalized(long value, byte scale = Precision)
