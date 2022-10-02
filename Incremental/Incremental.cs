@@ -426,8 +426,6 @@ namespace Cathei.Mathematics
             var y = (x - One) / (x + One);
             var ySquare = y * y;
 
-            // 0.9999 / 2.9999 ... 0.0001 / 2.0001 ... -0.9999 / 1.0001
-
             int iteration = 0;
             var exp = y + y;
 

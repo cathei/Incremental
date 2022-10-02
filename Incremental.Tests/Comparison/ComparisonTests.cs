@@ -1,5 +1,6 @@
 // Incremental, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -49,5 +50,23 @@ public class ComparisonTests
 
         Assert.AreEqual(b, Incremental.Max(a, b));
         Assert.AreEqual(b, Incremental.Max(b, a));
+    }
+
+    public static IEnumerable<Incremental[][]> SortingTestData = new List<Incremental[][]>
+    {
+        new[]
+        {
+            new Incremental[] { 10, 838, 9, 1, -9, 2, 0.1m, 22, 1.1m, -9, -0.023m, 10000002 },
+            new Incremental[] { -9, -9, -0.023m, 0.1m, 1, 1.1m, 2, 9, 10, 22, 838, 10000002 }
+        }
+    };
+
+
+    [TestCaseSource(nameof(SortingTestData))]
+    public void TestSorting(Incremental[] original, Incremental[] expected)
+    {
+        Array.Sort(original);
+
+        CollectionAssert.AreEqual(expected, original);
     }
 }
