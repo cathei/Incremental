@@ -103,6 +103,10 @@ namespace Cathei.Mathematics
             if (a.Exponent > b.Exponent)
                 (a, b) = (b, a);
 
+            // zero has -Infinity exponent
+            if (b.IsZero)
+                return a;
+
             var exponentDiff = b.Exponent - a.Exponent;
 
             // over max significant digits, a will be ignored
@@ -318,6 +322,21 @@ namespace Cathei.Mathematics
         }
 
         /// <summary>
+        /// Conversion to Int64.
+        /// Can throw OverflowException.
+        /// </summary>
+        public static long ToInt64(in Incremental value)
+        {
+            if (value.Exponent < 0)
+                return 0L;
+            if (value.Exponent > 18)
+                throw new OverflowException();
+            if (value.Exponent >= Precision)
+                return value.Mantissa * (long)PowersOf10[value.Exponent - Precision];
+            return value.Mantissa / (long)PowersOf10[Precision - value.Exponent];
+        }
+
+        /// <summary>
         /// Convert from double.
         /// Keep in mind that you will lose determinism when you operate with double.
         /// For that reason, double conversions will be explicit.
@@ -358,10 +377,10 @@ namespace Cathei.Mathematics
         public static explicit operator decimal(in Incremental value) => ToDecimal(value);
 
         public static implicit operator Incremental(long value) => new Incremental(value, Precision);
-        public static explicit operator long(in Incremental value) => (long)ToDecimal(value);
+        public static explicit operator long(in Incremental value) => ToInt64(value);
 
         public static implicit operator Incremental(int value) => new Incremental(value, Precision);
-        public static explicit operator int(in Incremental value) => (int)ToDecimal(value);
+        public static explicit operator int(in Incremental value) => (int)ToInt64(value);
 
         public static explicit operator Incremental(double value) => FromDouble(value);
         public static explicit operator double(in Incremental value) => ToDouble(value);
@@ -400,11 +419,11 @@ namespace Cathei.Mathematics
             if (value.IsZero)
                 throw new OverflowException("Log of 0 is -Infinity");
 
-            var result = Ln10 * value.Exponent;
+            var offset = Ln10 * value.Exponent;
 
             // Log of 1 is 0, result is calculated with Ln10
             if (value.Mantissa == Unit)
-                return result;
+                return offset;
 
             var x = new Incremental(value.Mantissa, 0, new AlreadyNormalized());
 
@@ -412,38 +431,17 @@ namespace Cathei.Mathematics
             if (value.Mantissa >= 2 * Unit)
             {
                 x = new Incremental(x.Mantissa, -1, new AlreadyNormalized());
-                result += Ln10;
+                offset += Ln10;
 
                 // it is faster when x is closer to 1, but cannot exceed 2
                 if (x.Mantissa <= 6 * Unit)
                 {
                     x *= E;
-                    result--;
+                    offset--;
                 }
             }
 
-            // Do Taylor series
-            var y = (x - One) / (x + One);
-            var ySquare = y * y;
-
-            int iteration = 0;
-            var exp = y + y;
-
-            while (true)
-            {
-                var next = exp / (iteration * 2 + 1);
-
-                // value is not significant anymore
-                if (result.Exponent - next.Exponent > Precision)
-                    break;
-
-                result += next;
-                exp *= ySquare;
-
-                iteration++;
-            }
-
-            return result;
+            return LogTaylorSeries(x) + offset;
         }
 
         /// <summary>
@@ -458,10 +456,83 @@ namespace Cathei.Mathematics
         }
 
         /// <summary>
+        /// Returns e raised to the power.
+        /// </summary>
+        public static Incremental Exp(Incremental power)
+        {
+            if (power.IsZero)
+                return One;
+
+            bool isNegative = power.IsNegative;
+
+            if (isNegative)
+                power = -power;
+
+            Incremental result;
+
+            if (power == One)
+            {
+                result = E;
+            }
+            else if (power < One)
+            {
+                result = ExpTaylorSeries(power);
+            }
+            else
+            {
+                var truncated = Truncate(power);
+
+                if (truncated == power)
+                {
+                    result = ExpBySquaring(E, (long)truncated);
+                }
+                else
+                {
+                    result = ExpBySquaring(E, (long)truncated);
+                    result *= ExpTaylorSeries(power - truncated);
+                }
+            }
+
+            // reciprocal for negative value
+            if (isNegative)
+                return One / result;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns value raised to the power.
+        /// </summary>
+        public static Incremental Pow(Incremental value, Incremental power)
+        {
+            if (value.IsNegative)
+                throw new ArgumentException("Power of negative value is complex number");
+
+            if (value == One || power.IsZero)
+                return One;
+
+            if (power == One)
+                return value;
+
+            if (value.IsZero)
+            {
+                if (power.IsNegative)
+                    throw new ArgumentException("Negative power of 0 is Infinity");
+                return Zero;
+            }
+
+            // a ^ b == e ^ (b ln a)
+            return Exp(power * Log(value));
+        }
+
+        /// <summary>
         /// Returns power of 10.
         /// </summary>
         public static Incremental Pow10(long power)
             => new Incremental(Unit, power, new AlreadyNormalized());
+
+        #endregion
+
+        #region Rounding methods
 
         /// <summary>
         /// Truncate the value. If exponent is specified, the digit of 1E+exponent will be least significant.

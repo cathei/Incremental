@@ -318,6 +318,83 @@ namespace Cathei.Mathematics
             return new decimal(lower, upper, 0, isNegative, scale);
         }
 
+        /// <summary>
+        /// Calculate logarithm with Taylor series.
+        /// x must be a value between 0 and 2.
+        /// </summary>
+        private static Incremental LogTaylorSeries(Incremental x)
+        {
+            var y = (x - One) / (x + One);
+            var ySquare = y * y;
+
+            int iteration = 1;
+            var exp = y + y;
+            var result = exp;
+
+            while (true)
+            {
+                exp *= ySquare;
+                var next = exp / (iteration * 2 + 1);
+
+                // value is not significant anymore
+                if (result.Exponent - next.Exponent > Precision)
+                    break;
+
+                result += next;
+                iteration++;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Calculate exp by squaring, only works for integer power
+        /// https://en.wikipedia.org/wiki/Exponentiation_by_squaring
+        /// </summary>
+        private static Incremental ExpBySquaring(Incremental value, long power)
+        {
+            var result = One;
+
+            while (power > 0)
+            {
+                if ((power & 0x1) != 0)
+                {
+                    result *= value;
+                }
+
+                value *= value;
+                power >>= 1;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Calculate exp with Taylor series
+        /// Faster when power is closer to 0
+        /// power must be between 0 and 1
+        /// </summary>
+        private static Incremental ExpTaylorSeries(in Incremental power)
+        {
+            int iteration = 2;
+            var result = One + power;
+            var next = power;
+
+            while (true)
+            {
+                next *= power / iteration;
+
+                // value is not significant anymore
+                if (result.Exponent - next.Exponent > Precision)
+                    break;
+
+                result += next;
+                iteration++;
+            }
+
+            return result;
+        }
+
         private readonly struct AlreadyNormalized { }
 
         #endregion

@@ -39,6 +39,9 @@ public class AdditionTests
             new(90_000_000_000_000_001, 1),
         },
 
+        // zero has -Infinity exponent
+        new Incremental[] { Zero, new(9, -1000), new(9, -1000) },
+
         // used in benchmark
         new Incremental[] { 3.141592e+10m, 2.45290e+8m, 3.166121e+10m },
         new Incremental[] { 0.00015m, 0.00000001325m, 0.00015001325m },
