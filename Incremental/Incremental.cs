@@ -220,6 +220,20 @@ namespace Cathei.Mathematics
         public static Incremental operator ++(in Incremental value) => value + One;
         public static Incremental operator --(in Incremental value) => value - One;
 
+        public static Incremental operator >>(in Incremental value, int shift)
+        {
+            if (value.IsZero || shift < 0)
+                return value;
+            return new Incremental(value.Mantissa, value.Exponent - shift, new AlreadyNormalized());
+        }
+
+        public static Incremental operator <<(in Incremental value, int shift)
+        {
+            if (value.IsZero || shift < 0)
+                return value;
+            return new Incremental(value.Mantissa, value.Exponent + shift, new AlreadyNormalized());
+        }
+
         #endregion
 
         #region Comparing operations
