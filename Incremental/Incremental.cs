@@ -1,6 +1,7 @@
 ﻿// Incremental, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Cathei.Mathematics
@@ -8,6 +9,7 @@ namespace Cathei.Mathematics
     /// <summary>
     /// 16-byte deterministic floating point decimal type.
     /// </summary>
+    [TypeConverter(typeof(IncrementalTypeConverter))]
     public readonly partial struct Incremental : IEquatable<Incremental>, IComparable<Incremental>
     {
         /// <summary>
@@ -633,17 +635,55 @@ namespace Cathei.Mathematics
             return Mantissa.GetHashCode() ^ Exponent.GetHashCode();
         }
 
-        public override string ToString()
-        {
-            // For debug purpose
-            return $"{(decimal)Mantissa / Unit:G}{Exponent:e+#;e-#;#}";
-        }
-
         public int CompareTo(Incremental other)
         {
             if (this == other)
                 return 0;
             return this < other ? -1 : 1;
+        }
+
+        #endregion
+
+        #region Format and parsing
+
+        public override string ToString()
+        {
+            return ToString(CultureInfo.CurrentCulture);
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            // following same rule as
+            // https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
+            // fixed-point notation
+            if (Precision >= Exponent && Exponent > -5)
+            {
+                decimal converted = ToDecimal(this);
+                return converted.ToString("G17", provider);
+            }
+
+            // scientific notation
+            decimal mantissa = (decimal)Mantissa / Incremental.Unit;
+            return mantissa.ToString("G17", provider) + Exponent.ToString("e+#;e-#;#", provider);
+        }
+
+        public static Incremental Parse(string value)
+        {
+            return Parse(value, CultureInfo.CurrentCulture);
+        }
+
+        public static Incremental Parse(string value, IFormatProvider provider)
+        {
+            string[] tokens = value.Split('e');
+
+            // fixed-point notation
+            if (tokens.Length == 1)
+                return decimal.Parse(tokens[0], provider);
+
+            // scientific notation
+            long mantissa = (long)(decimal.Parse(tokens[0], provider) * Unit);
+            long exponent = long.Parse(tokens[1], provider);
+            return new Incremental(mantissa, exponent);
         }
 
         #endregion
