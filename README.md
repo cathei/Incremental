@@ -16,7 +16,7 @@ Incremental Deterministic Decimal Number type in C#
   * Means you can have 9,223,372,036,854,775,807 zeros
 
 ## Installation
-Clone this repository and copy `Incremental.cs` and `Incremental.Internal.cs` to your project.
+Clone this repository and copy cs files under `Incremental` folder to your project.
 
 ## Comparison
 | Category         | Incremental          | C# decimal       | BreakInfinity BigDouble   |
