@@ -1,12 +1,19 @@
 ﻿// Incremental, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2022
 
+using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using Cathei.Mathematics.Benchmarks;
 
-BenchmarkRunner.Run<ArithmeticBenchmark>();
+var summaries = new List<Summary>();
 
-// summaries.Add(BenchmarkRunner.Run<AdditionBenchmark>());
-// summaries.Add(BenchmarkRunner.Run<SubtractionBenchmark>());
-// summaries.Add(BenchmarkRunner.Run<MultiplicationBenchmark>());
-// summaries.Add(BenchmarkRunner.Run<DivisionBenchmark>());
+summaries.Add(BenchmarkRunner.Run<AddBenchmark>());
+summaries.Add(BenchmarkRunner.Run<SubtractBenchmark>());
+summaries.Add(BenchmarkRunner.Run<MultiplyBenchmark>());
+summaries.Add(BenchmarkRunner.Run<DivideBenchmark>());
+
+foreach (var summary in summaries)
+{
+    MarkdownExporter.GitHub.ExportToLog(summary, ConsoleLogger.Default);
+}

@@ -518,7 +518,7 @@ namespace Cathei.Mathematics
         /// <summary>
         /// Returns value raised to the power.
         /// </summary>
-        public static Incremental Pow(Incremental value, Incremental power)
+        public static Incremental Pow(in Incremental value, in Incremental power)
         {
             if (value.IsNegative)
                 throw new ArgumentException("Power of negative value is complex number");

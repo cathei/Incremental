@@ -322,7 +322,7 @@ namespace Cathei.Mathematics
         /// Calculate logarithm with Taylor series.
         /// x must be a value between 0 and 2.
         /// </summary>
-        private static Incremental LogTaylorSeries(Incremental x)
+        private static Incremental LogTaylorSeries(in Incremental x)
         {
             var y = (x - One) / (x + One);
             var ySquare = y * y;
